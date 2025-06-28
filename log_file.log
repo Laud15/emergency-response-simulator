@@ -1,0 +1,604 @@
+[2025-06-21 17:52:28] [0] [SHARED MEMORY]  apertura shm lato client
+[2025-06-21 17:52:28] [0] [SHARED MEMORY]  letta lista coppie_em_pri
+[2025-06-21 17:52:28] [0] [SHARED MEMORY]  chiusura shm lato client
+[2025-06-21 17:52:28] [0] [MSQ]  message queue lato server aperta
+[2025-06-21 17:52:30] [0] [CLIENT REQUEST]  Incendio 110 200 2
+[2025-06-21 17:52:30] [7] [MSQ]  letto dalla mq emergenza:Incendio a <x:110,y:200>
+[2025-06-21 17:52:30] [0] [MSQ]  mq lato client chiusa
+[2025-06-21 17:52:30] [7] [MSQ]  richiesta elaborata correttamente
+[2025-06-21 17:52:30] [7] [EMERGENCY STATUS]  emergenza messa in stato di WAIT
+[2025-06-21 17:52:30] [7] [EMERGENCY STATUS]  Emergenza messa in ASSIGNED
+[2025-06-21 17:52:30] [7] [RESCUER ASSIGNMENT]  rescuer id: 1 Pompieri messo in stato EN_ROUTE_TO_SCENE
+[2025-06-21 17:52:30] [7] [RESCUER ASSIGNMENT]  rescuer id: 2 Pompieri messo in stato EN_ROUTE_TO_SCENE
+[2025-06-21 17:52:30] [7] [RESCUER ASSIGNMENT]  rescuer id: 2 Ambulanza messo in stato EN_ROUTE_TO_SCENE
+[2025-06-21 17:52:30] [7] [RESCUER ASSIGNMENT]  rescuer id: 1 Ambulanza messo in stato EN_ROUTE_TO_SCENE
+[2025-06-21 17:52:30] [7] [RESCUER ASSIGNMENT]  rescuer id: 3 Ambulanza messo in stato EN_ROUTE_TO_SCENE
+[2025-06-21 17:52:33] [7] [RESCUER STATUS]  rescuer id: 2 Pompieri messo in stato ON_SCENE
+[2025-06-21 17:52:33] [7] [RESCUER STATUS]  rescuer id: 1 Pompieri messo in stato ON_SCENE
+[2025-06-21 17:52:40] [7] [RESCUER STATUS]  rescuer id: 2 Ambulanza messo in stato ON_SCENE
+[2025-06-21 17:52:40] [7] [RESCUER STATUS]  rescuer id: 1 Ambulanza messo in stato ON_SCENE
+[2025-06-21 17:52:40] [7] [RESCUER STATUS]  rescuer id: 3 Ambulanza messo in stato ON_SCENE
+[2025-06-21 17:52:40] [7] [EMERGENCY STATUS]  emergenza IN PROGRESS
+[2025-06-21 17:52:41] [7] [RESCUER STATUS]  rescuer id: 2 Ambulanza messo in RETURNING TO BASE
+[2025-06-21 17:52:41] [7] [RESCUER STATUS]  rescuer id: 3 Ambulanza messo in RETURNING TO BASE
+[2025-06-21 17:52:41] [7] [RESCUER STATUS]  rescuer id: 1 Ambulanza messo in RETURNING TO BASE
+[2025-06-21 17:52:46] [0] [SHARED MEMORY]  apertura shm lato client
+[2025-06-21 17:52:46] [0] [SHARED MEMORY]  letta lista coppie_em_pri
+[2025-06-21 17:52:46] [0] [SHARED MEMORY]  chiusura shm lato client
+[2025-06-21 17:52:46] [0] [MSQ]  message queue lato server aperta
+[2025-06-21 17:52:48] [7] [RESCUER STATUS]  rescuer id: 2 Pompieri messo in RETURNING TO BASE
+[2025-06-21 17:52:48] [7] [EMERGENCY STATUS]  emergenza COMPLETED
+[2025-06-21 17:52:48] [7] [RESCUER STATUS]  rescuer id: 1 Pompieri messo in RETURNING TO BASE
+[2025-06-21 17:52:48] [0] [CLIENT REQUEST]  Incendio 110 200 2
+[2025-06-21 17:52:48] [0] [MSQ]  mq lato client chiusa
+[2025-06-21 17:52:48] [8] [MSQ]  letto dalla mq emergenza:Incendio a <x:110,y:200>
+[2025-06-21 17:52:48] [8] [MSQ]  richiesta elaborata correttamente
+[2025-06-21 17:52:48] [8] [EMERGENCY STATUS]  emergenza messa in stato di WAIT
+[2025-06-21 17:52:48] [8] [EMERGENCY STATUS]  Emergenza messa in ASSIGNED
+[2025-06-21 17:52:48] [8] [RESCUER ASSIGNMENT]  rescuer id: 3 Pompieri messo in stato EN_ROUTE_TO_SCENE
+[2025-06-21 17:52:48] [8] [RESCUER ASSIGNMENT]  rescuer id: 4 Pompieri messo in stato EN_ROUTE_TO_SCENE
+[2025-06-21 17:52:48] [8] [RESCUER ASSIGNMENT]  rescuer id: 4 Ambulanza messo in stato EN_ROUTE_TO_SCENE
+[2025-06-21 17:52:48] [8] [RESCUER ASSIGNMENT]  rescuer id: 5 Ambulanza messo in stato EN_ROUTE_TO_SCENE
+[2025-06-21 17:52:48] [8] [RESCUER ASSIGNMENT]  rescuer id: 6 Ambulanza messo in stato EN_ROUTE_TO_SCENE
+[2025-06-21 17:52:51] [7] [RESCUER STATUS]  rescuer id: 3 Ambulanza tornato alla base, messo in IDLE
+[2025-06-21 17:52:51] [7] [RESCUER STATUS]  rescuer id: 2 Ambulanza tornato alla base, messo in IDLE
+[2025-06-21 17:52:51] [7] [RESCUER STATUS]  rescuer id: 2 Pompieri tornato alla base, messo in IDLE
+[2025-06-21 17:52:51] [7] [RESCUER STATUS]  rescuer id: 1 Ambulanza tornato alla base, messo in IDLE
+[2025-06-21 17:52:51] [7] [RESCUER STATUS]  rescuer id: 1 Pompieri tornato alla base, messo in IDLE
+[2025-06-21 17:52:51] [8] [RESCUER STATUS]  rescuer id: 4 Pompieri messo in stato ON_SCENE
+[2025-06-21 17:52:51] [8] [RESCUER STATUS]  rescuer id: 3 Pompieri messo in stato ON_SCENE
+[2025-06-21 17:52:53] [0] [SHARED MEMORY]  apertura shm lato client
+[2025-06-21 17:52:53] [0] [SHARED MEMORY]  letta lista coppie_em_pri
+[2025-06-21 17:52:53] [0] [SHARED MEMORY]  chiusura shm lato client
+[2025-06-21 17:52:53] [0] [MSQ]  message queue lato server aperta
+[2025-06-21 17:52:55] [0] [CLIENT REQUEST]  Incendio 110 200 2
+[2025-06-21 17:52:55] [9] [MSQ]  letto dalla mq emergenza:Incendio a <x:110,y:200>
+[2025-06-21 17:52:55] [0] [MSQ]  mq lato client chiusa
+[2025-06-21 17:52:55] [9] [MSQ]  richiesta elaborata correttamente
+[2025-06-21 17:52:55] [9] [EMERGENCY STATUS]  emergenza messa in stato di WAIT
+[2025-06-21 17:52:55] [9] [EMERGENCY STATUS]  Emergenza messa in ASSIGNED
+[2025-06-21 17:52:55] [9] [RESCUER ASSIGNMENT]  rescuer id: 1 Pompieri messo in stato EN_ROUTE_TO_SCENE
+[2025-06-21 17:52:55] [9] [RESCUER ASSIGNMENT]  rescuer id: 2 Pompieri messo in stato EN_ROUTE_TO_SCENE
+[2025-06-21 17:52:55] [9] [RESCUER ASSIGNMENT]  rescuer id: 1 Ambulanza messo in stato EN_ROUTE_TO_SCENE
+[2025-06-21 17:52:55] [9] [RESCUER ASSIGNMENT]  rescuer id: 2 Ambulanza messo in stato EN_ROUTE_TO_SCENE
+[2025-06-21 17:52:55] [9] [RESCUER ASSIGNMENT]  rescuer id: 3 Ambulanza messo in stato EN_ROUTE_TO_SCENE
+[2025-06-21 17:52:58] [9] [RESCUER STATUS]  rescuer id: 1 Pompieri messo in stato ON_SCENE
+[2025-06-21 17:52:58] [9] [RESCUER STATUS]  rescuer id: 2 Pompieri messo in stato ON_SCENE
+[2025-06-21 17:52:58] [8] [RESCUER STATUS]  rescuer id: 4 Ambulanza messo in stato ON_SCENE
+[2025-06-21 17:52:58] [8] [RESCUER STATUS]  rescuer id: 5 Ambulanza messo in stato ON_SCENE
+[2025-06-21 17:52:58] [8] [RESCUER STATUS]  rescuer id: 6 Ambulanza messo in stato ON_SCENE
+[2025-06-21 17:52:58] [8] [EMERGENCY STATUS]  emergenza IN PROGRESS
+[2025-06-21 17:52:59] [8] [RESCUER STATUS]  rescuer id: 4 Ambulanza messo in RETURNING TO BASE
+[2025-06-21 17:52:59] [8] [RESCUER STATUS]  rescuer id: 5 Ambulanza messo in RETURNING TO BASE
+[2025-06-21 17:52:59] [8] [RESCUER STATUS]  rescuer id: 6 Ambulanza messo in RETURNING TO BASE
+[2025-06-21 17:53:05] [9] [RESCUER STATUS]  rescuer id: 2 Ambulanza messo in stato ON_SCENE
+[2025-06-21 17:53:05] [9] [RESCUER STATUS]  rescuer id: 3 Ambulanza messo in stato ON_SCENE
+[2025-06-21 17:53:05] [9] [RESCUER STATUS]  rescuer id: 1 Ambulanza messo in stato ON_SCENE
+[2025-06-21 17:53:05] [9] [EMERGENCY STATUS]  emergenza IN PROGRESS
+[2025-06-21 17:53:06] [9] [RESCUER STATUS]  rescuer id: 3 Ambulanza messo in RETURNING TO BASE
+[2025-06-21 17:53:06] [9] [RESCUER STATUS]  rescuer id: 1 Ambulanza messo in RETURNING TO BASE
+[2025-06-21 17:53:06] [9] [RESCUER STATUS]  rescuer id: 2 Ambulanza messo in RETURNING TO BASE
+[2025-06-21 17:53:06] [8] [RESCUER STATUS]  rescuer id: 4 Pompieri messo in RETURNING TO BASE
+[2025-06-21 17:53:06] [8] [EMERGENCY STATUS]  emergenza COMPLETED
+[2025-06-21 17:53:06] [8] [RESCUER STATUS]  rescuer id: 3 Pompieri messo in RETURNING TO BASE
+[2025-06-21 17:53:09] [8] [RESCUER STATUS]  rescuer id: 6 Ambulanza tornato alla base, messo in IDLE
+[2025-06-21 17:53:09] [8] [RESCUER STATUS]  rescuer id: 5 Ambulanza tornato alla base, messo in IDLE
+[2025-06-21 17:53:09] [8] [RESCUER STATUS]  rescuer id: 4 Pompieri tornato alla base, messo in IDLE
+[2025-06-21 17:53:09] [8] [RESCUER STATUS]  rescuer id: 3 Pompieri tornato alla base, messo in IDLE
+[2025-06-21 17:53:09] [8] [RESCUER STATUS]  rescuer id: 4 Ambulanza tornato alla base, messo in IDLE
+[2025-06-21 17:53:13] [9] [RESCUER STATUS]  rescuer id: 1 Pompieri messo in RETURNING TO BASE
+[2025-06-21 17:53:13] [9] [EMERGENCY STATUS]  emergenza COMPLETED
+[2025-06-21 17:53:13] [9] [RESCUER STATUS]  rescuer id: 2 Pompieri messo in RETURNING TO BASE
+[2025-06-21 17:53:16] [9] [RESCUER STATUS]  rescuer id: 3 Ambulanza tornato alla base, messo in IDLE
+[2025-06-21 17:53:16] [9] [RESCUER STATUS]  rescuer id: 1 Ambulanza tornato alla base, messo in IDLE
+[2025-06-21 17:53:16] [9] [RESCUER STATUS]  rescuer id: 1 Pompieri tornato alla base, messo in IDLE
+[2025-06-21 17:53:16] [9] [RESCUER STATUS]  rescuer id: 2 Pompieri tornato alla base, messo in IDLE
+[2025-06-21 17:53:16] [9] [RESCUER STATUS]  rescuer id: 2 Ambulanza tornato alla base, messo in IDLE
+[2025-06-21 17:56:13] [0] [SHARED MEMORY]  apertura shm lato client
+[2025-06-21 17:56:13] [0] [SHARED MEMORY]  letta lista coppie_em_pri
+[2025-06-21 17:56:13] [0] [SHARED MEMORY]  chiusura shm lato client
+[2025-06-21 17:56:13] [0] [MSQ]  message queue lato server aperta
+[2025-06-21 17:56:13] [10] [SHUTDOWN REQUEST]  richiesta di shutdown server
+[2025-06-21 17:56:13] [11] [SHUTDOWN REQUEST]  richiesta di shutdown server
+[2025-06-21 17:56:13] [0] [CLIENT REQUEST]  shutdown_server richiesto da client
+[2025-06-21 17:56:13] [0] [MSQ]  mq lato client chiusa
+[2025-06-21 17:56:13] [12] [SHUTDOWN REQUEST]  richiesta di shutdown server
+[2025-06-21 17:56:13] [14] [SHUTDOWN REQUEST]  richiesta di shutdown server
+[2025-06-21 17:56:13] [15] [SHUTDOWN REQUEST]  richiesta di shutdown server
+[2025-06-21 17:56:13] [13] [SHUTDOWN REQUEST]  richiesta di shutdown server
+[2025-06-21 17:56:13] [4] [SHARED MEMORY]  chiusura completa della shm
+[2025-06-21 17:56:13] [5] [MSQ]  chisura e unlink della mq
+[2025-06-21 17:56:13] [0] [SHUTDOWN REQUEST]  chiusura server avvenuta con successo
+[2025-06-22 12:40:06] [1] [PARSE FILE ENV]  apertura file env.conf andata a buon fine
+[2025-06-22 12:40:06] [1] [PARSE FILE ENV]  queue=emergenze672272
+
+[2025-06-22 12:40:06] [1] [PARSE FILE ENV]  heigth=300
+
+[2025-06-22 12:40:06] [1] [PARSE FILE ENV]  width=400
+
+[2025-06-22 12:40:06] [1] [PARSE FILE ENV]  chiusura file env
+[2025-06-22 12:40:06] [2] [PARSE FILE RESCUERS]  apertura file rescuers.conf
+[2025-06-22 12:40:06] [2] [PARSE FILE RESCUERS]  [Pompieri] [5] [3] [100;200]
+
+[2025-06-22 12:40:06] [2] [PARSE FILE RESCUERS]  [Ambulanza] [25] [4] [140;190]
+
+[2025-06-22 12:40:06] [2] [PARSE FILE RESCUERS]  [Polizia] [8] [5] [120;220]
+
+[2025-06-22 12:40:06] [2] [PARSE FILE RESCUERS]  chiusura file rescuers.conf
+[2025-06-22 12:40:06] [3] [PARSE FILE EMERGENCY TYPE]  apertura file emergency_types.conf
+[2025-06-22 12:40:06] [3] [PARSE FILE EMERGENCY TYPE]  [Apocalisse] [2] Pompieri:5,5;Ambulanza:25,2;Polizia:8,6;
+
+[2025-06-22 12:40:06] [3] [PARSE FILE EMERGENCY TYPE]  [Incendio] [2] Pompieri:2,8;Ambulanza:3,1;
+
+[2025-06-22 12:40:06] [3] [PARSE FILE EMERGENCY TYPE]  [Sommossa] [2] Polizia:3,8;Ambulanza:2,4;
+
+[2025-06-22 12:40:06] [3] [PARSE FILE EMERGENCY TYPE]  [Terremoto] [2] Pompieri:3,8;Ambulanza:4,2;Polizia:2,4;
+
+[2025-06-22 12:40:06] [3] [PARSE FILE EMERGENCY TYPE]  [Allagamento] [1] Pompieri:1,5;Ambulanza:1,2;
+
+[2025-06-22 12:40:06] [3] [PARSE FILE EMERGENCY TYPE]  [Rissa] [1] Polizia:2,5;Ambulanza:1,4;
+
+[2025-06-22 12:40:06] [3] [PARSE FILE EMERGENCY TYPE]  [Furto] [0] Polizia:1,2;
+
+[2025-06-22 12:40:06] [3] [PARSE FILE EMERGENCY TYPE]  [Caduta_albero] [0] Pompieri:2,5;
+
+[2025-06-22 12:40:06] [3] [PARSE FILE EMERGENCY TYPE]  chiusura file emergency_types.conf
+[2025-06-22 12:40:06] [4] [SHARED MEMORY]  apertura shm lato server
+[2025-06-22 12:40:06] [4] [SHARED MEMORY]  comunicata lunghezza lista emergenza
+[2025-06-22 12:40:06] [4] [SHARED MEMORY]  emergenze e priorità inserite nell shm
+[2025-06-22 12:40:06] [5] [MSQ]  apertura mq lato server
+[2025-06-22 12:40:32] [0] [SHARED MEMORY]  apertura shm lato client
+[2025-06-22 12:40:32] [0] [SHARED MEMORY]  letta lista coppie_em_pri
+[2025-06-22 12:40:32] [0] [SHARED MEMORY]  chiusura shm lato client
+[2025-06-22 12:40:32] [0] [MSQ]  message queue lato server aperta
+[2025-06-22 12:40:32] [0] [INVALID INPUT]  input non valido dato da riga di comando
+[2025-06-22 12:40:32] [0] [MSQ]  mq lato client chiusa
+[2025-06-22 12:40:50] [0] [SHARED MEMORY]  apertura shm lato client
+[2025-06-22 12:40:50] [0] [SHARED MEMORY]  letta lista coppie_em_pri
+[2025-06-22 12:40:50] [0] [SHARED MEMORY]  chiusura shm lato client
+[2025-06-22 12:40:50] [0] [MSQ]  message queue lato server aperta
+[2025-06-22 12:40:50] [0] [INVALID INPUT]  formato della stringa non valido
+[2025-06-22 12:40:52] [0] [CLIENT REQUEST]  Incendio 110 200 2
+
+[2025-06-22 12:40:52] [0] [CLIENT REQUEST]  Sommossa 109 199 2
+
+[2025-06-22 12:40:52] [6] [MSQ]  letto dalla mq emergenza:Incendio a <x:110,y:200>
+[2025-06-22 12:40:52] [0] [CLIENT REQUEST]  Terremoto 111 201 2
+
+[2025-06-22 12:40:52] [7] [MSQ]  letto dalla mq emergenza:Sommossa a <x:109,y:199>
+[2025-06-22 12:40:52] [6] [MSQ]  richiesta elaborata correttamente
+[2025-06-22 12:40:52] [6] [EMERGENCY STATUS]  emergenza messa in stato di WAIT
+[2025-06-22 12:40:52] [7] [MSQ]  richiesta elaborata correttamente
+[2025-06-22 12:40:52] [7] [EMERGENCY STATUS]  emergenza messa in stato di WAIT
+[2025-06-22 12:40:52] [8] [MSQ]  letto dalla mq emergenza:Terremoto a <x:111,y:201>
+[2025-06-22 12:40:52] [6] [EMERGENCY STATUS]  Emergenza messa in ASSIGNED
+[2025-06-22 12:40:52] [8] [MSQ]  richiesta elaborata correttamente
+[2025-06-22 12:40:52] [6] [RESCUER ASSIGNMENT]  rescuer id: 1 Pompieri messo in stato EN_ROUTE_TO_SCENE
+[2025-06-22 12:40:52] [6] [RESCUER ASSIGNMENT]  rescuer id: 2 Pompieri messo in stato EN_ROUTE_TO_SCENE
+[2025-06-22 12:40:52] [8] [EMERGENCY STATUS]  emergenza messa in stato di WAIT
+[2025-06-22 12:40:52] [6] [RESCUER ASSIGNMENT]  rescuer id: 2 Ambulanza messo in stato EN_ROUTE_TO_SCENE
+[2025-06-22 12:40:52] [6] [RESCUER ASSIGNMENT]  rescuer id: 1 Ambulanza messo in stato EN_ROUTE_TO_SCENE
+[2025-06-22 12:40:52] [7] [EMERGENCY STATUS]  Emergenza messa in ASSIGNED
+[2025-06-22 12:40:52] [6] [RESCUER ASSIGNMENT]  rescuer id: 3 Ambulanza messo in stato EN_ROUTE_TO_SCENE
+[2025-06-22 12:40:52] [7] [RESCUER ASSIGNMENT]  rescuer id: 1 Polizia messo in stato EN_ROUTE_TO_SCENE
+[2025-06-22 12:40:52] [7] [RESCUER ASSIGNMENT]  rescuer id: 2 Polizia messo in stato EN_ROUTE_TO_SCENE
+[2025-06-22 12:40:52] [7] [RESCUER ASSIGNMENT]  rescuer id: 3 Polizia messo in stato EN_ROUTE_TO_SCENE
+[2025-06-22 12:40:52] [8] [EMERGENCY STATUS]  Emergenza messa in ASSIGNED
+[2025-06-22 12:40:52] [7] [RESCUER ASSIGNMENT]  rescuer id: 4 Ambulanza messo in stato EN_ROUTE_TO_SCENE
+[2025-06-22 12:40:52] [7] [RESCUER ASSIGNMENT]  rescuer id: 5 Ambulanza messo in stato EN_ROUTE_TO_SCENE
+[2025-06-22 12:40:52] [8] [RESCUER ASSIGNMENT]  rescuer id: 3 Pompieri messo in stato EN_ROUTE_TO_SCENE
+[2025-06-22 12:40:52] [8] [RESCUER ASSIGNMENT]  rescuer id: 4 Pompieri messo in stato EN_ROUTE_TO_SCENE
+[2025-06-22 12:40:52] [8] [RESCUER ASSIGNMENT]  rescuer id: 5 Pompieri messo in stato EN_ROUTE_TO_SCENE
+[2025-06-22 12:40:52] [8] [RESCUER ASSIGNMENT]  rescuer id: 6 Ambulanza messo in stato EN_ROUTE_TO_SCENE
+[2025-06-22 12:40:52] [8] [RESCUER ASSIGNMENT]  rescuer id: 7 Ambulanza messo in stato EN_ROUTE_TO_SCENE
+[2025-06-22 12:40:52] [8] [RESCUER ASSIGNMENT]  rescuer id: 8 Ambulanza messo in stato EN_ROUTE_TO_SCENE
+[2025-06-22 12:40:52] [8] [RESCUER ASSIGNMENT]  rescuer id: 9 Ambulanza messo in stato EN_ROUTE_TO_SCENE
+[2025-06-22 12:40:52] [8] [RESCUER ASSIGNMENT]  rescuer id: 4 Polizia messo in stato EN_ROUTE_TO_SCENE
+[2025-06-22 12:40:52] [8] [RESCUER ASSIGNMENT]  rescuer id: 5 Polizia messo in stato EN_ROUTE_TO_SCENE
+[2025-06-22 12:40:53] [0] [CLIENT REQUEST]  Furto 200 150 3
+
+[2025-06-22 12:40:53] [0] [CLIENT REQUEST]  Terremoto 110 200 3
+
+[2025-06-22 12:40:53] [9] [MSQ]  letto dalla mq emergenza:Terremoto a <x:110,y:200>
+[2025-06-22 12:40:53] [9] [MSQ]  richiesta elaborata correttamente
+[2025-06-22 12:40:53] [9] [EMERGENCY STATUS]  emergenza messa in stato di WAIT
+[2025-06-22 12:40:53] [9] [EMERGENCY STATUS]  emergenza messa in PAUSE
+[2025-06-22 12:40:53] [10] [MSQ]  letto dalla mq emergenza:Furto a <x:200,y:150>
+[2025-06-22 12:40:53] [10] [MSQ]  richiesta elaborata correttamente
+[2025-06-22 12:40:53] [10] [EMERGENCY STATUS]  emergenza messa in stato di WAIT
+[2025-06-22 12:40:53] [10] [EMERGENCY STATUS]  Emergenza messa in ASSIGNED
+[2025-06-22 12:40:53] [10] [RESCUER ASSIGNMENT]  rescuer id: 6 Polizia messo in stato EN_ROUTE_TO_SCENE
+[2025-06-22 12:40:54] [0] [CLIENT REQUEST]  Allagamento 110 185 4
+
+[2025-06-22 12:40:54] [11] [MSQ]  letto dalla mq emergenza:Allagamento a <x:110,y:185>
+[2025-06-22 12:40:54] [11] [MSQ]  richiesta elaborata correttamente
+[2025-06-22 12:40:54] [11] [EMERGENCY STATUS]  emergenza messa in stato di WAIT
+[2025-06-22 12:40:54] [11] [EMERGENCY STATUS]  emergenza messa in PAUSE
+[2025-06-22 12:40:54] [0] [CLIENT REQUEST]  Allagamento 105 180 4
+
+[2025-06-22 12:40:54] [12] [MSQ]  letto dalla mq emergenza:Allagamento a <x:105,y:180>
+[2025-06-22 12:40:54] [12] [MSQ]  richiesta elaborata correttamente
+[2025-06-22 12:40:54] [12] [EMERGENCY STATUS]  emergenza messa in stato di WAIT
+[2025-06-22 12:40:54] [12] [EMERGENCY STATUS]  emergenza messa in PAUSE
+[2025-06-22 12:40:54] [0] [CLIENT REQUEST]  Rissa 380 290 4
+
+[2025-06-22 12:40:54] [13] [MSQ]  letto dalla mq emergenza:Rissa a <x:380,y:290>
+[2025-06-22 12:40:54] [13] [MSQ]  richiesta elaborata correttamente
+[2025-06-22 12:40:54] [13] [EMERGENCY STATUS]  emergenza messa in stato di WAIT
+[2025-06-22 12:40:54] [0] [MSQ]  mq lato client chiusa
+[2025-06-22 12:40:54] [13] [TIMEOUT FOR DISTANCE]  TIMEOUT dell'emergenza
+[2025-06-22 12:40:55] [6] [RESCUER STATUS]  rescuer id: 1 Pompieri messo in stato ON_SCENE
+[2025-06-22 12:40:55] [6] [RESCUER STATUS]  rescuer id: 2 Pompieri messo in stato ON_SCENE
+[2025-06-22 12:40:56] [8] [RESCUER STATUS]  rescuer id: 4 Pompieri messo in stato ON_SCENE
+[2025-06-22 12:40:56] [8] [RESCUER STATUS]  rescuer id: 3 Pompieri messo in stato ON_SCENE
+[2025-06-22 12:40:56] [8] [RESCUER STATUS]  rescuer id: 5 Pompieri messo in stato ON_SCENE
+[2025-06-22 12:40:57] [8] [RESCUER STATUS]  rescuer id: 4 Polizia messo in stato ON_SCENE
+[2025-06-22 12:40:57] [8] [RESCUER STATUS]  rescuer id: 5 Polizia messo in stato ON_SCENE
+[2025-06-22 12:40:58] [7] [RESCUER STATUS]  rescuer id: 2 Polizia messo in stato ON_SCENE
+[2025-06-22 12:40:58] [7] [RESCUER STATUS]  rescuer id: 1 Polizia messo in stato ON_SCENE
+[2025-06-22 12:40:58] [7] [RESCUER STATUS]  rescuer id: 3 Polizia messo in stato ON_SCENE
+[2025-06-22 12:41:02] [6] [RESCUER STATUS]  rescuer id: 2 Ambulanza messo in stato ON_SCENE
+[2025-06-22 12:41:02] [6] [RESCUER STATUS]  rescuer id: 3 Ambulanza messo in stato ON_SCENE
+[2025-06-22 12:41:02] [6] [RESCUER STATUS]  rescuer id: 1 Ambulanza messo in stato ON_SCENE
+[2025-06-22 12:41:02] [6] [EMERGENCY STATUS]  emergenza IN PROGRESS
+[2025-06-22 12:41:02] [7] [RESCUER STATUS]  rescuer id: 4 Ambulanza messo in stato ON_SCENE
+[2025-06-22 12:41:02] [7] [RESCUER STATUS]  rescuer id: 5 Ambulanza messo in stato ON_SCENE
+[2025-06-22 12:41:02] [7] [EMERGENCY STATUS]  emergenza IN PROGRESS
+[2025-06-22 12:41:02] [8] [RESCUER STATUS]  rescuer id: 6 Ambulanza messo in stato ON_SCENE
+[2025-06-22 12:41:02] [8] [RESCUER STATUS]  rescuer id: 7 Ambulanza messo in stato ON_SCENE
+[2025-06-22 12:41:02] [8] [RESCUER STATUS]  rescuer id: 8 Ambulanza messo in stato ON_SCENE
+[2025-06-22 12:41:02] [8] [RESCUER STATUS]  rescuer id: 9 Ambulanza messo in stato ON_SCENE
+[2025-06-22 12:41:02] [8] [EMERGENCY STATUS]  emergenza IN PROGRESS
+[2025-06-22 12:41:03] [9] [TIMEOUT FOR RESOURCES]  TIMEOUT dell'emergenza
+[2025-06-22 12:41:03] [6] [RESCUER STATUS]  rescuer id: 1 Ambulanza messo in RETURNING TO BASE
+[2025-06-22 12:41:03] [6] [RESCUER STATUS]  rescuer id: 3 Ambulanza messo in RETURNING TO BASE
+[2025-06-22 12:41:03] [6] [RESCUER STATUS]  rescuer id: 2 Ambulanza messo in RETURNING TO BASE
+[2025-06-22 12:41:04] [8] [RESCUER STATUS]  rescuer id: 6 Ambulanza messo in RETURNING TO BASE
+[2025-06-22 12:41:04] [8] [RESCUER STATUS]  rescuer id: 9 Ambulanza messo in RETURNING TO BASE
+[2025-06-22 12:41:04] [8] [RESCUER STATUS]  rescuer id: 7 Ambulanza messo in RETURNING TO BASE
+[2025-06-22 12:41:04] [8] [RESCUER STATUS]  rescuer id: 8 Ambulanza messo in RETURNING TO BASE
+[2025-06-22 12:41:06] [7] [RESCUER STATUS]  rescuer id: 4 Ambulanza messo in RETURNING TO BASE
+[2025-06-22 12:41:06] [7] [RESCUER STATUS]  rescuer id: 5 Ambulanza messo in RETURNING TO BASE
+[2025-06-22 12:41:06] [8] [RESCUER STATUS]  rescuer id: 5 Polizia messo in RETURNING TO BASE
+[2025-06-22 12:41:06] [8] [RESCUER STATUS]  rescuer id: 4 Polizia messo in RETURNING TO BASE
+[2025-06-22 12:41:09] [6] [RESCUER STATUS]  rescuer id: 1 Pompieri messo in RETURNING TO BASE
+[2025-06-22 12:41:09] [6] [EMERGENCY STATUS]  emergenza COMPLETED
+[2025-06-22 12:41:09] [6] [RESCUER STATUS]  rescuer id: 2 Pompieri messo in RETURNING TO BASE
+[2025-06-22 12:41:09] [7] [RESCUER STATUS]  rescuer id: 3 Polizia messo in RETURNING TO BASE
+[2025-06-22 12:41:09] [7] [RESCUER STATUS]  rescuer id: 2 Polizia messo in RETURNING TO BASE
+[2025-06-22 12:41:09] [7] [EMERGENCY STATUS]  emergenza COMPLETED
+[2025-06-22 12:41:09] [7] [RESCUER STATUS]  rescuer id: 1 Polizia messo in RETURNING TO BASE
+[2025-06-22 12:41:09] [8] [RESCUER STATUS]  rescuer id: 5 Pompieri messo in RETURNING TO BASE
+[2025-06-22 12:41:09] [8] [EMERGENCY STATUS]  emergenza COMPLETED
+[2025-06-22 12:41:09] [8] [RESCUER STATUS]  rescuer id: 4 Pompieri messo in RETURNING TO BASE
+[2025-06-22 12:41:09] [8] [RESCUER STATUS]  rescuer id: 3 Pompieri messo in RETURNING TO BASE
+[2025-06-22 12:41:10] [8] [RESCUER STATUS]  rescuer id: 4 Polizia tornato alla base, messo in IDLE
+[2025-06-22 12:41:10] [8] [RESCUER STATUS]  rescuer id: 5 Polizia tornato alla base, messo in IDLE
+[2025-06-22 12:41:10] [11] [EMERGENCY STATUS]  emergenza messa in PAUSE
+[2025-06-22 12:41:10] [12] [EMERGENCY STATUS]  emergenza messa in PAUSE
+[2025-06-22 12:41:12] [6] [RESCUER STATUS]  rescuer id: 1 Pompieri tornato alla base, messo in IDLE
+[2025-06-22 12:41:12] [6] [RESCUER STATUS]  rescuer id: 1 Ambulanza tornato alla base, messo in IDLE
+[2025-06-22 12:41:12] [11] [EMERGENCY STATUS]  Emergenza messa in ASSIGNED
+[2025-06-22 12:41:12] [6] [RESCUER STATUS]  rescuer id: 2 Pompieri tornato alla base, messo in IDLE
+[2025-06-22 12:41:12] [6] [RESCUER STATUS]  rescuer id: 3 Ambulanza tornato alla base, messo in IDLE
+[2025-06-22 12:41:12] [11] [RESCUER ASSIGNMENT]  rescuer id: 1 Pompieri messo in stato EN_ROUTE_TO_SCENE
+[2025-06-22 12:41:12] [11] [RESCUER ASSIGNMENT]  rescuer id: 1 Ambulanza messo in stato EN_ROUTE_TO_SCENE
+[2025-06-22 12:41:12] [12] [EMERGENCY STATUS]  Emergenza messa in ASSIGNED
+[2025-06-22 12:41:12] [12] [RESCUER ASSIGNMENT]  rescuer id: 2 Pompieri messo in stato EN_ROUTE_TO_SCENE
+[2025-06-22 12:41:12] [12] [RESCUER ASSIGNMENT]  rescuer id: 3 Ambulanza messo in stato EN_ROUTE_TO_SCENE
+[2025-06-22 12:41:12] [6] [RESCUER STATUS]  rescuer id: 2 Ambulanza tornato alla base, messo in IDLE
+[2025-06-22 12:41:13] [8] [RESCUER STATUS]  rescuer id: 3 Pompieri tornato alla base, messo in IDLE
+[2025-06-22 12:41:13] [8] [RESCUER STATUS]  rescuer id: 6 Ambulanza tornato alla base, messo in IDLE
+[2025-06-22 12:41:13] [8] [RESCUER STATUS]  rescuer id: 5 Pompieri tornato alla base, messo in IDLE
+[2025-06-22 12:41:13] [8] [RESCUER STATUS]  rescuer id: 8 Ambulanza tornato alla base, messo in IDLE
+[2025-06-22 12:41:13] [8] [RESCUER STATUS]  rescuer id: 4 Pompieri tornato alla base, messo in IDLE
+[2025-06-22 12:41:13] [8] [RESCUER STATUS]  rescuer id: 9 Ambulanza tornato alla base, messo in IDLE
+[2025-06-22 12:41:13] [8] [RESCUER STATUS]  rescuer id: 7 Ambulanza tornato alla base, messo in IDLE
+[2025-06-22 12:41:15] [7] [RESCUER STATUS]  rescuer id: 5 Ambulanza tornato alla base, messo in IDLE
+[2025-06-22 12:41:15] [7] [RESCUER STATUS]  rescuer id: 4 Ambulanza tornato alla base, messo in IDLE
+[2025-06-22 12:41:15] [7] [RESCUER STATUS]  rescuer id: 3 Polizia tornato alla base, messo in IDLE
+[2025-06-22 12:41:15] [7] [RESCUER STATUS]  rescuer id: 2 Polizia tornato alla base, messo in IDLE
+[2025-06-22 12:41:15] [7] [RESCUER STATUS]  rescuer id: 1 Polizia tornato alla base, messo in IDLE
+[2025-06-22 12:41:20] [11] [RESCUER STATUS]  rescuer id: 1 Pompieri messo in stato ON_SCENE
+[2025-06-22 12:41:20] [12] [RESCUER STATUS]  rescuer id: 2 Pompieri messo in stato ON_SCENE
+[2025-06-22 12:41:20] [11] [RESCUER STATUS]  rescuer id: 1 Ambulanza messo in stato ON_SCENE
+[2025-06-22 12:41:20] [11] [EMERGENCY STATUS]  emergenza IN PROGRESS
+[2025-06-22 12:41:22] [10] [RESCUER STATUS]  rescuer id: 6 Polizia messo in stato ON_SCENE
+[2025-06-22 12:41:22] [10] [EMERGENCY STATUS]  emergenza IN PROGRESS
+[2025-06-22 12:41:22] [11] [RESCUER STATUS]  rescuer id: 1 Ambulanza messo in RETURNING TO BASE
+[2025-06-22 12:41:23] [12] [RESCUER STATUS]  rescuer id: 3 Ambulanza messo in stato ON_SCENE
+[2025-06-22 12:41:23] [12] [EMERGENCY STATUS]  emergenza IN PROGRESS
+[2025-06-22 12:41:24] [10] [EMERGENCY STATUS]  emergenza COMPLETED
+[2025-06-22 12:41:24] [10] [RESCUER STATUS]  rescuer id: 6 Polizia messo in RETURNING TO BASE
+[2025-06-22 12:41:25] [11] [EMERGENCY STATUS]  emergenza COMPLETED
+[2025-06-22 12:41:25] [11] [RESCUER STATUS]  rescuer id: 1 Pompieri messo in RETURNING TO BASE
+[2025-06-22 12:41:25] [12] [RESCUER STATUS]  rescuer id: 3 Ambulanza messo in RETURNING TO BASE
+[2025-06-22 12:41:28] [12] [EMERGENCY STATUS]  emergenza COMPLETED
+[2025-06-22 12:41:28] [12] [RESCUER STATUS]  rescuer id: 2 Pompieri messo in RETURNING TO BASE
+[2025-06-22 12:41:30] [11] [RESCUER STATUS]  rescuer id: 1 Ambulanza tornato alla base, messo in IDLE
+[2025-06-22 12:41:33] [11] [RESCUER STATUS]  rescuer id: 1 Pompieri tornato alla base, messo in IDLE
+[2025-06-22 12:41:36] [12] [RESCUER STATUS]  rescuer id: 2 Pompieri tornato alla base, messo in IDLE
+[2025-06-22 12:41:36] [12] [RESCUER STATUS]  rescuer id: 3 Ambulanza tornato alla base, messo in IDLE
+[2025-06-22 12:41:53] [10] [RESCUER STATUS]  rescuer id: 6 Polizia tornato alla base, messo in IDLE
+[2025-06-23 23:47:04] [1] [PARSE FILE ENV]  apertura file env.conf andata a buon fine
+[2025-06-23 23:47:04] [1] [PARSE FILE ENV]  queue=emergenze672272
+
+[2025-06-23 23:47:04] [1] [PARSE FILE ENV]  heigth=300
+
+[2025-06-23 23:47:04] [1] [PARSE FILE ENV]  width=400
+
+[2025-06-23 23:47:04] [1] [PARSE FILE ENV]  chiusura file env
+[2025-06-23 23:47:04] [2] [PARSE FILE RESCUERS]  apertura file rescuers.conf
+[2025-06-23 23:47:04] [2] [PARSE FILE RESCUERS]  [Pompieri] [5] [3] [100;200]
+
+[2025-06-23 23:47:04] [2] [PARSE FILE RESCUERS]  [Ambulanza] [25] [4] [140;190]
+
+[2025-06-23 23:47:04] [2] [PARSE FILE RESCUERS]  [Polizia] [8] [5] [120;220]
+
+[2025-06-23 23:47:04] [2] [PARSE FILE RESCUERS]  chiusura file rescuers.conf
+[2025-06-23 23:47:04] [3] [PARSE FILE EMERGENCY TYPE]  apertura file emergency_types.conf
+[2025-06-23 23:47:04] [3] [PARSE FILE EMERGENCY TYPE]  [Apocalisse] [2] Pompieri:5,5;Ambulanza:25,2;Polizia:8,6;
+
+[2025-06-23 23:47:04] [3] [PARSE FILE EMERGENCY TYPE]  [Incendio] [2] Pompieri:2,8;Ambulanza:3,1;
+
+[2025-06-23 23:47:04] [3] [PARSE FILE EMERGENCY TYPE]  [Sommossa] [2] Polizia:3,8;Ambulanza:2,4;
+
+[2025-06-23 23:47:04] [3] [PARSE FILE EMERGENCY TYPE]  [Terremoto] [2] Pompieri:3,8;Ambulanza:4,2;Polizia:2,4;
+
+[2025-06-23 23:47:04] [3] [PARSE FILE EMERGENCY TYPE]  [Allagamento] [1] Pompieri:1,5;Ambulanza:1,2;
+
+[2025-06-23 23:47:04] [3] [PARSE FILE EMERGENCY TYPE]  [Rissa] [1] Polizia:2,5;Ambulanza:1,4;
+
+[2025-06-23 23:47:04] [3] [PARSE FILE EMERGENCY TYPE]  [Furto] [0] Polizia:1,2;
+
+[2025-06-23 23:47:04] [3] [PARSE FILE EMERGENCY TYPE]  [Caduta_albero] [0] Pompieri:2,5;
+
+[2025-06-23 23:47:04] [3] [PARSE FILE EMERGENCY TYPE]  chiusura file emergency_types.conf
+[2025-06-23 23:47:04] [4] [SHARED MEMORY]  apertura shm lato server
+[2025-06-23 23:47:04] [4] [SHARED MEMORY]  comunicata lunghezza lista emergenza
+[2025-06-23 23:47:04] [4] [SHARED MEMORY]  emergenze e priorità inserite nell shm
+[2025-06-23 23:47:04] [5] [MSQ]  apertura mq lato server
+[2025-06-23 23:47:13] [0] [SHARED MEMORY]  apertura shm lato client
+[2025-06-23 23:47:13] [0] [SHARED MEMORY]  letta lista coppie_em_pri
+[2025-06-23 23:47:13] [0] [SHARED MEMORY]  chiusura shm lato client
+[2025-06-23 23:47:13] [0] [MSQ]  message queue lato server aperta
+[2025-06-23 23:47:13] [0] [CLIENT REQUEST]  shutdown_server richiesto da client
+[2025-06-23 23:47:13] [9] [SHUTDOWN REQUEST]  richiesta di shutdown server
+[2025-06-23 23:47:13] [12] [SHUTDOWN REQUEST]  richiesta di shutdown server
+[2025-06-23 23:47:13] [0] [MSQ]  mq lato client chiusa
+[2025-06-23 23:47:13] [11] [SHUTDOWN REQUEST]  richiesta di shutdown server
+[2025-06-23 23:47:13] [8] [SHUTDOWN REQUEST]  richiesta di shutdown server
+[2025-06-23 23:47:13] [7] [SHUTDOWN REQUEST]  richiesta di shutdown server
+[2025-06-23 23:47:13] [13] [SHUTDOWN REQUEST]  richiesta di shutdown server
+[2025-06-23 23:47:13] [14] [SHUTDOWN REQUEST]  richiesta di shutdown server
+[2025-06-23 23:47:13] [15] [SHUTDOWN REQUEST]  richiesta di shutdown server
+[2025-06-23 23:47:13] [10] [SHUTDOWN REQUEST]  richiesta di shutdown server
+[2025-06-23 23:47:13] [6] [SHUTDOWN REQUEST]  richiesta di shutdown server
+[2025-06-23 23:48:02] [1] [PARSE FILE ENV]  apertura file env.conf andata a buon fine
+[2025-06-23 23:48:02] [1] [PARSE FILE ENV]  queue=emergenze672272
+
+[2025-06-23 23:48:02] [1] [PARSE FILE ENV]  heigth=300
+
+[2025-06-23 23:48:02] [1] [PARSE FILE ENV]  width=400
+
+[2025-06-23 23:48:02] [1] [PARSE FILE ENV]  chiusura file env
+[2025-06-23 23:48:02] [2] [PARSE FILE RESCUERS]  apertura file rescuers.conf
+[2025-06-23 23:48:02] [2] [PARSE FILE RESCUERS]  [Pompieri] [5] [3] [100;200]
+
+[2025-06-23 23:48:02] [2] [PARSE FILE RESCUERS]  [Ambulanza] [25] [4] [140;190]
+
+[2025-06-23 23:48:02] [2] [PARSE FILE RESCUERS]  [Polizia] [8] [5] [120;220]
+
+[2025-06-23 23:48:02] [2] [PARSE FILE RESCUERS]  chiusura file rescuers.conf
+[2025-06-23 23:48:02] [3] [PARSE FILE EMERGENCY TYPE]  apertura file emergency_types.conf
+[2025-06-23 23:48:02] [3] [PARSE FILE EMERGENCY TYPE]  [Apocalisse] [2] Pompieri:5,5;Ambulanza:25,2;Polizia:8,6;
+
+[2025-06-23 23:48:02] [3] [PARSE FILE EMERGENCY TYPE]  [Incendio] [2] Pompieri:2,8;Ambulanza:3,1;
+
+[2025-06-23 23:48:02] [3] [PARSE FILE EMERGENCY TYPE]  [Sommossa] [2] Polizia:3,8;Ambulanza:2,4;
+
+[2025-06-23 23:48:02] [3] [PARSE FILE EMERGENCY TYPE]  [Terremoto] [2] Pompieri:3,8;Ambulanza:4,2;Polizia:2,4;
+
+[2025-06-23 23:48:02] [3] [PARSE FILE EMERGENCY TYPE]  [Allagamento] [1] Pompieri:1,5;Ambulanza:1,2;
+
+[2025-06-23 23:48:02] [3] [PARSE FILE EMERGENCY TYPE]  [Rissa] [1] Polizia:2,5;Ambulanza:1,4;
+
+[2025-06-23 23:48:02] [3] [PARSE FILE EMERGENCY TYPE]  [Furto] [0] Polizia:1,2;
+
+[2025-06-23 23:48:02] [3] [PARSE FILE EMERGENCY TYPE]  [Caduta_albero] [0] Pompieri:2,5;
+
+[2025-06-23 23:48:02] [3] [PARSE FILE EMERGENCY TYPE]  chiusura file emergency_types.conf
+[2025-06-23 23:48:02] [4] [SHARED MEMORY]  apertura shm lato server
+[2025-06-23 23:48:02] [4] [SHARED MEMORY]  comunicata lunghezza lista emergenza
+[2025-06-23 23:48:02] [4] [SHARED MEMORY]  emergenze e priorità inserite nell shm
+[2025-06-23 23:48:02] [5] [MSQ]  apertura mq lato server
+[2025-06-23 23:48:04] [0] [SHARED MEMORY]  apertura shm lato client
+[2025-06-23 23:48:04] [0] [SHARED MEMORY]  letta lista coppie_em_pri
+[2025-06-23 23:48:04] [0] [SHARED MEMORY]  chiusura shm lato client
+[2025-06-23 23:48:04] [0] [MSQ]  message queue lato server aperta
+[2025-06-23 23:48:04] [6] [SHUTDOWN REQUEST]  richiesta di shutdown server
+[2025-06-23 23:48:04] [0] [CLIENT REQUEST]  shutdown_server richiesto da client
+[2025-06-23 23:48:04] [0] [MSQ]  mq lato client chiusa
+[2025-06-23 23:48:04] [8] [SHUTDOWN REQUEST]  richiesta di shutdown server
+[2025-06-23 23:48:04] [14] [SHUTDOWN REQUEST]  richiesta di shutdown server
+[2025-06-23 23:48:04] [9] [SHUTDOWN REQUEST]  richiesta di shutdown server
+[2025-06-23 23:48:04] [10] [SHUTDOWN REQUEST]  richiesta di shutdown server
+[2025-06-23 23:48:04] [11] [SHUTDOWN REQUEST]  richiesta di shutdown server
+[2025-06-23 23:48:04] [12] [SHUTDOWN REQUEST]  richiesta di shutdown server
+[2025-06-23 23:48:04] [15] [SHUTDOWN REQUEST]  richiesta di shutdown server
+[2025-06-23 23:48:04] [13] [SHUTDOWN REQUEST]  richiesta di shutdown server
+[2025-06-23 23:48:04] [7] [SHUTDOWN REQUEST]  richiesta di shutdown server
+[2025-06-23 23:48:04] [4] [SHARED MEMORY]  chiusura completa della shm
+[2025-06-23 23:48:04] [5] [MSQ]  chisura e unlink della mq
+[2025-06-23 23:48:04] [0] [SHUTDOWN REQUEST]  chiusura server avvenuta con successo
+[2025-06-23 23:48:38] [1] [PARSE FILE ENV]  apertura file env.conf andata a buon fine
+[2025-06-23 23:48:38] [1] [PARSE FILE ENV]  queue=emergenze672272
+
+[2025-06-23 23:48:38] [1] [PARSE FILE ENV]  heigth=300
+
+[2025-06-23 23:48:38] [1] [PARSE FILE ENV]  width=400
+
+[2025-06-23 23:48:38] [1] [PARSE FILE ENV]  chiusura file env
+[2025-06-23 23:48:38] [2] [PARSE FILE RESCUERS]  apertura file rescuers.conf
+[2025-06-23 23:48:38] [2] [PARSE FILE RESCUERS]  [Pompieri] [5] [3] [100;200]
+
+[2025-06-23 23:48:38] [2] [PARSE FILE RESCUERS]  [Ambulanza] [25] [4] [140;190]
+
+[2025-06-23 23:48:38] [2] [PARSE FILE RESCUERS]  [Polizia] [8] [5] [120;220]
+
+[2025-06-23 23:48:38] [2] [PARSE FILE RESCUERS]  chiusura file rescuers.conf
+[2025-06-23 23:48:38] [3] [PARSE FILE EMERGENCY TYPE]  apertura file emergency_types.conf
+[2025-06-23 23:48:38] [3] [PARSE FILE EMERGENCY TYPE]  [Apocalisse] [2] Pompieri:5,5;Ambulanza:25,2;Polizia:8,6;
+
+[2025-06-23 23:48:38] [3] [PARSE FILE EMERGENCY TYPE]  [Incendio] [2] Pompieri:2,8;Ambulanza:3,1;
+
+[2025-06-23 23:48:38] [3] [PARSE FILE EMERGENCY TYPE]  [Sommossa] [2] Polizia:3,8;Ambulanza:2,4;
+
+[2025-06-23 23:48:38] [3] [PARSE FILE EMERGENCY TYPE]  [Terremoto] [2] Pompieri:3,8;Ambulanza:4,2;Polizia:2,4;
+
+[2025-06-23 23:48:38] [3] [PARSE FILE EMERGENCY TYPE]  [Allagamento] [1] Pompieri:1,5;Ambulanza:1,2;
+
+[2025-06-23 23:48:38] [3] [PARSE FILE EMERGENCY TYPE]  [Rissa] [1] Polizia:2,5;Ambulanza:1,4;
+
+[2025-06-23 23:48:38] [3] [PARSE FILE EMERGENCY TYPE]  [Furto] [0] Polizia:1,2;
+
+[2025-06-23 23:48:38] [3] [PARSE FILE EMERGENCY TYPE]  [Caduta_albero] [0] Pompieri:2,5;
+
+[2025-06-23 23:48:38] [3] [PARSE FILE EMERGENCY TYPE]  chiusura file emergency_types.conf
+[2025-06-23 23:48:38] [4] [SHARED MEMORY]  apertura shm lato server
+[2025-06-23 23:48:38] [4] [SHARED MEMORY]  comunicata lunghezza lista emergenza
+[2025-06-23 23:48:38] [4] [SHARED MEMORY]  emergenze e priorità inserite nell shm
+[2025-06-23 23:48:38] [5] [MSQ]  apertura mq lato server
+[2025-06-23 23:48:40] [0] [SHARED MEMORY]  apertura shm lato client
+[2025-06-23 23:48:40] [0] [SHARED MEMORY]  letta lista coppie_em_pri
+[2025-06-23 23:48:40] [0] [SHARED MEMORY]  chiusura shm lato client
+[2025-06-23 23:48:40] [0] [MSQ]  message queue lato server aperta
+[2025-06-23 23:48:40] [6] [SHUTDOWN REQUEST]  richiesta di shutdown server
+[2025-06-23 23:48:40] [0] [CLIENT REQUEST]  shutdown_server richiesto da client
+[2025-06-23 23:48:40] [9] [SHUTDOWN REQUEST]  richiesta di shutdown server
+[2025-06-23 23:48:40] [0] [MSQ]  mq lato client chiusa
+[2025-06-23 23:48:40] [7] [SHUTDOWN REQUEST]  richiesta di shutdown server
+[2025-06-23 23:48:40] [13] [SHUTDOWN REQUEST]  richiesta di shutdown server
+[2025-06-23 23:48:40] [10] [SHUTDOWN REQUEST]  richiesta di shutdown server
+[2025-06-23 23:48:40] [12] [SHUTDOWN REQUEST]  richiesta di shutdown server
+[2025-06-23 23:48:40] [8] [SHUTDOWN REQUEST]  richiesta di shutdown server
+[2025-06-23 23:48:40] [11] [SHUTDOWN REQUEST]  richiesta di shutdown server
+[2025-06-23 23:48:40] [14] [SHUTDOWN REQUEST]  richiesta di shutdown server
+[2025-06-23 23:48:40] [15] [SHUTDOWN REQUEST]  richiesta di shutdown server
+[2025-06-23 23:48:40] [4] [SHARED MEMORY]  chiusura completa della shm
+[2025-06-23 23:48:40] [5] [MSQ]  chisura e unlink della mq
+[2025-06-23 23:48:40] [0] [SHUTDOWN REQUEST]  chiusura server avvenuta con successo
+[2025-06-23 23:49:19] [1] [PARSE FILE ENV]  apertura file env.conf andata a buon fine
+[2025-06-23 23:49:19] [1] [PARSE FILE ENV]  queue=emergenze672272
+
+[2025-06-23 23:49:19] [1] [PARSE FILE ENV]  heigth=300
+
+[2025-06-23 23:49:19] [1] [PARSE FILE ENV]  width=400
+
+[2025-06-23 23:49:19] [1] [PARSE FILE ENV]  chiusura file env
+[2025-06-23 23:49:19] [2] [PARSE FILE RESCUERS]  apertura file rescuers.conf
+[2025-06-23 23:49:19] [2] [PARSE FILE RESCUERS]  [Pompieri] [5] [3] [100;200]
+
+[2025-06-23 23:49:19] [2] [PARSE FILE RESCUERS]  [Ambulanza] [25] [4] [140;190]
+
+[2025-06-23 23:49:19] [2] [PARSE FILE RESCUERS]  [Polizia] [8] [5] [120;220]
+
+[2025-06-23 23:49:19] [2] [PARSE FILE RESCUERS]  chiusura file rescuers.conf
+[2025-06-23 23:49:19] [3] [PARSE FILE EMERGENCY TYPE]  apertura file emergency_types.conf
+[2025-06-23 23:49:19] [3] [PARSE FILE EMERGENCY TYPE]  [Apocalisse] [2] Pompieri:5,5;Ambulanza:25,2;Polizia:8,6;
+
+[2025-06-23 23:49:19] [3] [PARSE FILE EMERGENCY TYPE]  [Incendio] [2] Pompieri:2,8;Ambulanza:3,1;
+
+[2025-06-23 23:49:19] [3] [PARSE FILE EMERGENCY TYPE]  [Sommossa] [2] Polizia:3,8;Ambulanza:2,4;
+
+[2025-06-23 23:49:19] [3] [PARSE FILE EMERGENCY TYPE]  [Terremoto] [2] Pompieri:3,8;Ambulanza:4,2;Polizia:2,4;
+
+[2025-06-23 23:49:19] [3] [PARSE FILE EMERGENCY TYPE]  [Allagamento] [1] Pompieri:1,5;Ambulanza:1,2;
+
+[2025-06-23 23:49:19] [3] [PARSE FILE EMERGENCY TYPE]  [Rissa] [1] Polizia:2,5;Ambulanza:1,4;
+
+[2025-06-23 23:49:19] [3] [PARSE FILE EMERGENCY TYPE]  [Furto] [0] Polizia:1,2;
+
+[2025-06-23 23:49:19] [3] [PARSE FILE EMERGENCY TYPE]  [Caduta_albero] [0] Pompieri:2,5;
+
+[2025-06-23 23:49:19] [3] [PARSE FILE EMERGENCY TYPE]  chiusura file emergency_types.conf
+[2025-06-23 23:49:19] [4] [SHARED MEMORY]  apertura shm lato server
+[2025-06-23 23:49:19] [4] [SHARED MEMORY]  comunicata lunghezza lista emergenza
+[2025-06-23 23:49:19] [4] [SHARED MEMORY]  emergenze e priorità inserite nell shm
+[2025-06-23 23:49:19] [5] [MSQ]  apertura mq lato server
+[2025-06-23 23:49:21] [0] [SHARED MEMORY]  apertura shm lato client
+[2025-06-23 23:49:21] [0] [SHARED MEMORY]  letta lista coppie_em_pri
+[2025-06-23 23:49:21] [0] [SHARED MEMORY]  chiusura shm lato client
+[2025-06-23 23:49:21] [0] [MSQ]  message queue lato server aperta
+[2025-06-23 23:49:21] [6] [SHUTDOWN REQUEST]  richiesta di shutdown server
+[2025-06-23 23:49:21] [0] [CLIENT REQUEST]  shutdown_server richiesto da client
+[2025-06-23 23:49:21] [8] [SHUTDOWN REQUEST]  richiesta di shutdown server
+[2025-06-23 23:49:21] [0] [MSQ]  mq lato client chiusa
+[2025-06-23 23:49:21] [9] [SHUTDOWN REQUEST]  richiesta di shutdown server
+[2025-06-23 23:49:21] [12] [SHUTDOWN REQUEST]  richiesta di shutdown server
+[2025-06-23 23:49:21] [10] [SHUTDOWN REQUEST]  richiesta di shutdown server
+[2025-06-23 23:49:21] [7] [SHUTDOWN REQUEST]  richiesta di shutdown server
+[2025-06-23 23:49:21] [13] [SHUTDOWN REQUEST]  richiesta di shutdown server
+[2025-06-23 23:49:21] [11] [SHUTDOWN REQUEST]  richiesta di shutdown server
+[2025-06-23 23:49:21] [14] [SHUTDOWN REQUEST]  richiesta di shutdown server
+[2025-06-23 23:49:21] [15] [SHUTDOWN REQUEST]  richiesta di shutdown server
+[2025-06-23 23:49:21] [4] [SHARED MEMORY]  chiusura completa della shm
+[2025-06-23 23:49:21] [5] [MSQ]  chisura e unlink della mq
+[2025-06-23 23:49:21] [0] [SHUTDOWN REQUEST]  chiusura server avvenuta con successo
+[2025-06-23 23:49:26] [1] [PARSE FILE ENV]  apertura file env.conf andata a buon fine
+[2025-06-23 23:49:26] [1] [PARSE FILE ENV]  queue=emergenze672272
+
+[2025-06-23 23:49:26] [1] [PARSE FILE ENV]  heigth=300
+
+[2025-06-23 23:49:26] [1] [PARSE FILE ENV]  width=400
+
+[2025-06-23 23:49:26] [1] [PARSE FILE ENV]  chiusura file env
+[2025-06-23 23:49:26] [2] [PARSE FILE RESCUERS]  apertura file rescuers.conf
+[2025-06-23 23:49:26] [2] [PARSE FILE RESCUERS]  [Pompieri] [5] [3] [100;200]
+
+[2025-06-23 23:49:26] [2] [PARSE FILE RESCUERS]  [Ambulanza] [25] [4] [140;190]
+
+[2025-06-23 23:49:26] [2] [PARSE FILE RESCUERS]  [Polizia] [8] [5] [120;220]
+
+[2025-06-23 23:49:26] [2] [PARSE FILE RESCUERS]  chiusura file rescuers.conf
+[2025-06-23 23:49:26] [3] [PARSE FILE EMERGENCY TYPE]  apertura file emergency_types.conf
+[2025-06-23 23:49:26] [3] [PARSE FILE EMERGENCY TYPE]  [Apocalisse] [2] Pompieri:5,5;Ambulanza:25,2;Polizia:8,6;
+
+[2025-06-23 23:49:26] [3] [PARSE FILE EMERGENCY TYPE]  [Incendio] [2] Pompieri:2,8;Ambulanza:3,1;
+
+[2025-06-23 23:49:26] [3] [PARSE FILE EMERGENCY TYPE]  [Sommossa] [2] Polizia:3,8;Ambulanza:2,4;
+
+[2025-06-23 23:49:26] [3] [PARSE FILE EMERGENCY TYPE]  [Terremoto] [2] Pompieri:3,8;Ambulanza:4,2;Polizia:2,4;
+
+[2025-06-23 23:49:26] [3] [PARSE FILE EMERGENCY TYPE]  [Allagamento] [1] Pompieri:1,5;Ambulanza:1,2;
+
+[2025-06-23 23:49:26] [3] [PARSE FILE EMERGENCY TYPE]  [Rissa] [1] Polizia:2,5;Ambulanza:1,4;
+
+[2025-06-23 23:49:26] [3] [PARSE FILE EMERGENCY TYPE]  [Furto] [0] Polizia:1,2;
+
+[2025-06-23 23:49:26] [3] [PARSE FILE EMERGENCY TYPE]  [Caduta_albero] [0] Pompieri:2,5;
+
+[2025-06-23 23:49:26] [3] [PARSE FILE EMERGENCY TYPE]  chiusura file emergency_types.conf
+[2025-06-23 23:49:26] [4] [SHARED MEMORY]  apertura shm lato server
+[2025-06-23 23:49:26] [4] [SHARED MEMORY]  comunicata lunghezza lista emergenza
+[2025-06-23 23:49:26] [4] [SHARED MEMORY]  emergenze e priorità inserite nell shm
+[2025-06-23 23:49:26] [5] [MSQ]  apertura mq lato server
+[2025-06-23 23:49:29] [0] [SHARED MEMORY]  apertura shm lato client
+[2025-06-23 23:49:29] [0] [SHARED MEMORY]  letta lista coppie_em_pri
+[2025-06-23 23:49:29] [0] [SHARED MEMORY]  chiusura shm lato client
+[2025-06-23 23:49:29] [0] [MSQ]  message queue lato server aperta
+[2025-06-23 23:49:29] [6] [SHUTDOWN REQUEST]  richiesta di shutdown server
+[2025-06-23 23:49:29] [9] [SHUTDOWN REQUEST]  richiesta di shutdown server
+[2025-06-23 23:49:29] [7] [SHUTDOWN REQUEST]  richiesta di shutdown server
+[2025-06-23 23:49:29] [0] [CLIENT REQUEST]  shutdown_server richiesto da client
+[2025-06-23 23:49:29] [11] [SHUTDOWN REQUEST]  richiesta di shutdown server
+[2025-06-23 23:49:29] [0] [MSQ]  mq lato client chiusa
+[2025-06-23 23:49:29] [10] [SHUTDOWN REQUEST]  richiesta di shutdown server
+[2025-06-23 23:49:29] [14] [SHUTDOWN REQUEST]  richiesta di shutdown server
+[2025-06-23 23:49:29] [8] [SHUTDOWN REQUEST]  richiesta di shutdown server
+[2025-06-23 23:49:29] [15] [SHUTDOWN REQUEST]  richiesta di shutdown server
+[2025-06-23 23:49:29] [13] [SHUTDOWN REQUEST]  richiesta di shutdown server
+[2025-06-23 23:49:29] [12] [SHUTDOWN REQUEST]  richiesta di shutdown server
+[2025-06-23 23:49:29] [4] [SHARED MEMORY]  chiusura completa della shm
+[2025-06-23 23:49:29] [5] [MSQ]  chisura e unlink della mq
+[2025-06-23 23:49:29] [0] [SHUTDOWN REQUEST]  chiusura server avvenuta con successo
