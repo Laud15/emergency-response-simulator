@@ -6,7 +6,7 @@
 
 int main(int argc, char* argv[]){
 
-    mqd_t mq;//dichiaro la mq
+    mqd_t mq;//dichiaro la message queue
     
     if(argc > 1){
 
