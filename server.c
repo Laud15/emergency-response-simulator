@@ -6,7 +6,7 @@
 #include "file_header/handler_emergency.h"
 #include "file_header/write_log.h"
 
-volatile sig_atomic_t go=1;
+atomic_int go=1;
 int id_operazione=0;
 
 //in caso ci siano problemi con la lettura dei file usare l'istruzione bash "sed -i '${/^$/d;}' file_directory" per cancellare possibili righe vuote nel file
@@ -45,7 +45,7 @@ int main(){
     //faccio il parsing dei tipi di emergenze
     id_operazione++;
     res_parser emergency_t_res = parse_emergency_types(&lista_emergency,lista_rescuers, rescuers_res.cnt);
-
+ 
     if(emergency_t_res.error==SCALL_ERROR){
         perror("errore nel parsing delle emergency_type");
         FREE_ALL_RESCUE(&lista_rescuers, rescuers_res.cnt);
@@ -84,7 +84,7 @@ int main(){
         FREE_ALL_EMERGENCY(&lista_emergency, emergency_t_res.cnt);
         exit(EXIT_FAILURE);
     };
-
+ 
     shm_size=(sizeof(coppia_emergenza_priorità)*(emergency_t_res.cnt+1));
 
     fd_shm=shm_open(SHM_NAME, O_CREAT | O_RDWR, 0620);
@@ -129,6 +129,8 @@ int main(){
     write_log(time(NULL), id_shm, SHM, "emergenze e priorità inserite nell shm");
     //FINE PARTE SHM_____________________________________________________________________________
 
+
+
     //printf("nome queue:%s, heigth:%d, width:%d\n", ambiente.nome_msg_queue, ambiente.height, ambiente.width);
     id_operazione++;
     int id_mq_server = id_operazione;
@@ -159,7 +161,10 @@ int main(){
 
     THRD_CHECK(mtx_init(&mutex_rescuer, mtx_plain), "errore nella init di mutex_rescuer");
     THRD_CHECK(mtx_init(&mtx_call_rescuers, mtx_plain), "errore nella ini di mtx_call_rescuers");
-    THRD_CHECK(cnd_init(&new_idle), "errore nella init di new_idle");
+    
+    THRD_CHECK(cnd_init(&new_idle_pri0), "errore nella init di new_idle");
+    THRD_CHECK(cnd_init(&new_idle_pri1), "errore nella init di new_idle");
+    THRD_CHECK(cnd_init(&new_idle_pri2), "errore nella init di new_idle");
 
 
     printf("INIZIO GESTIONE EMERGENZE\n");
@@ -201,7 +206,10 @@ int main(){
 
     mtx_destroy(&mutex_rescuer);
     mtx_destroy(&mtx_call_rescuers);
-    cnd_destroy(&new_idle);
+   
+    cnd_destroy(&new_idle_pri0);
+    cnd_destroy(&new_idle_pri1);
+    cnd_destroy(&new_idle_pri2);
 
     EQ_ERROR(munmap((coppie_em_prio), shm_size), "errore nella munmap della shm");
     EQ_ERROR(close(fd_shm), "errore nella chiusura della shm");
@@ -214,7 +222,6 @@ int main(){
     //printf("chiusura e unlink della mq avvenuta con successo\n");
     
     
-
     write_log(time(NULL), 0, SHUTDOWN, "chiusura server avvenuta con successo");
     printf("server chiuso!\n");
     return 0;

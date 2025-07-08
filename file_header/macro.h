@@ -25,7 +25,7 @@
 #define SCALL_ERROR -1
 #define NUM_THREAD_SERVER 10
 
-extern volatile sig_atomic_t go;
+extern atomic_int go;
 extern int id_operazione;
 
 #define SHM_NAME "/shared_memory"

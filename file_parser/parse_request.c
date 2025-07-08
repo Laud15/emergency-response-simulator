@@ -42,7 +42,7 @@ res_parser parse_file(char* directory, mqd_t mq, coppia_emergenza_priorità* lis
         //creo la struttura da passare al thread come argomento
         data_client_parse* data;
         NCALL_PARSER(data, malloc(sizeof(data_client_parse)), "errore nell'allocazione di memoria per i dati da mandare al thread", res, fd);
-        NCALL_PARSER(data->riga, malloc(sizeof(char)*strlen(buffer)), "errore nell'allocazione della riga per il thread", res, fd);
+        NCALL_PARSER(data->riga, malloc(sizeof(char)*(strlen(buffer)+1)), "errore nell'allocazione della riga per il thread", res, fd);
         strcpy(data->riga, buffer);
         
         data->f=parse_riga;
@@ -58,6 +58,7 @@ res_parser parse_file(char* directory, mqd_t mq, coppia_emergenza_priorità* lis
         THRD_CHECK(thrd_join(threads[i], NULL), "errore nella thrd_join lato server");
     }
 
+    
     free(threads);
     CHECK_END_FGETS(fd, res, "lettura file e invio messaggi completato con successo\n");//controllo che la fgets sia terminata perchè arrivata a EOF
     CHECK_FCLOSE(fd,res,"errore nella chiusura del file");//controllo la chiusura corretta del file

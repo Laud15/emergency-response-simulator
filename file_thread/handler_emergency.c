@@ -2,10 +2,14 @@
 #include "../file_header/barrier.h"
 #include "../file_header/write_log.h"
 
+
+int pri2_cnt=0;//contatore che tiene traccia del numero di emergenze con priorità 2 in pausa
+int pri1_cnt=0;//contatore che tiene traccia del numero di emergenze con priorità 1 in pausa
 mtx_t mutex_rescuer;//mutex che protegge la broadcast quando un rescuer diventa idle
 mtx_t mtx_call_rescuers;//mutex che serve per l'accesso in mutua esclusione alla lista condivisa tra tutti i thread
-cnd_t new_idle;//condition variable che serve a monitorare se ci sono dei soccorritori in stato di idle
-
+cnd_t new_idle_pri0;//cond var per le emergenza con priorità 0
+cnd_t new_idle_pri1;//cond var per le emergenza con priorità 1
+cnd_t new_idle_pri2;//cond var per le emergenza con priorità 2
 
 
 
@@ -57,11 +61,15 @@ int tempo_sufficiente(emergency_type_t emergenza, int x_dest, int y_dest, struct
             return 0;
 
         }
+
         printf("il tempo di arrivo a %s  <x:%d,y:%d> è %d, ok!\n\n", emergenza.emergency_desc, x_dest, y_dest, max);//se invece il tempo è sufficiente posso continuare
         return 1;
+
     }
+
     printf("il tempo di arrivo a %s  <x:%d,y:%d> è ok\n", emergenza.emergency_desc, x_dest, y_dest);//questo è il caso in cui ho priorità 0
     return 1;
+    
 }
 
 
@@ -75,6 +83,7 @@ int libera(rescuer_digital_twin_t** lista, int len){//funzione di "rilascio" dei
     }
     return 0;
 }
+
 
 
 
@@ -118,9 +127,8 @@ int rescuer_thread(void* arg){
 
         printf("\n--emergenza a <x:%d, y:%d> risolta--\n\n", resc_data->dest_x, resc_data->dest_y);
         (*(resc_data->stato_emergenza))=COMPLETED;
-
-        
         write_log(time(NULL), resc_data->id, EMERGENCY_STATUS, "emergenza COMPLETED");
+
     }
 
     //printf("restano ancora %d soccorritori sul luogo\n", *(resc_data->n_twin));
@@ -131,21 +139,31 @@ int rescuer_thread(void* arg){
     write_log(time(NULL), resc_data->id, RESCUER_STATUS, buffer);
 
     sleep(travel_time);//faccio passare il tempo per tornare alla base
-    printf("sono %d %s e sono ritornato alla base!\n", resc_data->twin->id,resc_data->twin->rescuer->rescuer_type_name);
+    //printf("sono %d %s e sono ritornato alla base!\n", resc_data->twin->id,resc_data->twin->rescuer->rescuer_type_name);
     resc_data->twin->status=IDLE;//mi rimetto in idle
 
     snprintf(buffer, BUFFERSIZE, "rescuer id: %d %s tornato alla base, messo in IDLE", resc_data->twin->id ,resc_data->twin->rescuer->rescuer_type_name);
     write_log(time(NULL), resc_data->id, RESCUER_STATUS, buffer);
 
     THRD_CHECK(mtx_lock(&mutex_rescuer), "errore nella lock di mutex_rescuer");
-    THRD_CHECK(cnd_broadcast(&new_idle), "errore nella broadcast di new_idle");//dopo essermi settato ad idle comunico a chi era in attesa che c'è un nuovo soccorritore disponibile
+
+
+    if(pri2_cnt>0){//se ci sono emergenze con priorità 2 risveglio quelle
+        printf("sveglio quelli con priorità 2\n");
+        THRD_CHECK(cnd_broadcast(&new_idle_pri2), "errore nella broadcast di new_idle");
+    }else if(pri1_cnt>0){//se non ci sono emergenze di priorità 2 ma ci sono di priorità 1
+        printf("sveglio quelli con priorità 1\n");
+        THRD_CHECK(cnd_broadcast(&new_idle_pri1), "errore nella broadcast di new_idle");
+    }else{//se ci sono solo priorità 0
+        printf("sveglio quelli con priorità 0\n");
+         THRD_CHECK(cnd_broadcast(&new_idle_pri0), "errore nella broadcast di new_idle");
+    }
+
     THRD_CHECK(mtx_unlock(&mutex_rescuer), "errore nella unlock di mutex_rescuer");
 
     free(resc_data);//libero la memoria allocata per il dato
     return thrd_success;
 }
-
-
 
 
 
@@ -197,10 +215,8 @@ int solve(emergency_t* emergenza, int id){//funzio che presa un emergenza chiama
     
     mtx_destroy(&mtx_barrier);//distruggo il mutex
     cnd_destroy(&cnd_barrier);//distruggo la cond_var
-    free(emergenza->rescuers_dt);//libero la memoria allocata per i gemelli di ogni emergenza
     return 0;
 }
-
 
 
 
@@ -246,8 +262,6 @@ int call_rescuers(rescuer_request_t tipo_rescuer, coppie_numero_gemelli* lista_c
     }
     return 0;
 }
-
-
 
 
 
@@ -305,16 +319,38 @@ int try_solve(emergency_t* emergenza, coppie_numero_gemelli* lst_coppie_n_gem, i
 
         while(call_rescuers(emergenza->type.rescuers[i], lst_coppie_n_gem, len_lista_coppie, (emergenza->rescuers_dt), emergenza->rescuer_count)==0){//provo a chiamare il numero di gemelli di quel tipo di cui ho bisogno, re ci riesco continuo sennò mi metto in attesa
 
-            printf("\n---non ci sono tutti i soccorritori di cui ho bisogno, mi metto in pausa---\n");
             emergenza->status=PAUSED;//se non posso chiamare tutti i soccorritori di cui ho bisogno mi metto in stato di PAUSED
             write_log(time(NULL), id, EMERGENCY_STATUS, "emergenza messa in PAUSE");
 
             if(emergenza->type.priority>0){//se ho necessita del time uso una cnd_timedwait
-                
-                cnd_res = cnd_timedwait(&new_idle, &mtx_call_rescuers, &deadline);
-                THRD_CHECK(cnd_res, "errore nella cnd_timedwait di new_idle");
+
+                if(emergenza->type.priority==2){
+                    
+                    pri2_cnt++;
+                    printf("\n---non ci sono tutti i soccorritori di cui ho bisogno, mi metto in pausa, siamo %d con prio 2 in attesa---\n", pri2_cnt);
+                    cnd_res = cnd_timedwait(&new_idle_pri2, &mtx_call_rescuers, &deadline);
+
+                }else{
+
+                    pri1_cnt++;
+                    printf("\n---non ci sono tutti i soccorritori di cui ho bisogno, mi metto in pausa, siamo %d con prio 1 in attesa---\n", pri1_cnt);
+                    cnd_res = cnd_timedwait(&new_idle_pri1, &mtx_call_rescuers, &deadline);
+
+                }
+
+                THRD_CHECK(cnd_res, "errore nella cnd_timedwait");
 
                 printf("\nsono %s <x:%d,y:%d> e ho saputo ci sono nuovi idle\n\n", emergenza->type.emergency_desc, emergenza->x, emergenza->y);
+                emergenza->status=WAITING;
+                write_log(time(NULL), id, EMERGENCY_STATUS, "emergenza messa in WAITING");
+
+                if(emergenza->type.priority==2){
+                    pri2_cnt--;
+                    printf("\n---sono rimasti %d di priorità 2 in attesa---\n", pri2_cnt);
+                }else{
+                    pri1_cnt--;
+                    printf("\n---sono rimasti %d di priorità 1 in attesa---\n", pri1_cnt);
+                }
 
                 if(cnd_res == thrd_timedout || (tempo_sufficiente(emergenza->type,emergenza->x, emergenza->y, deadline, start)==0)){//una volta risvegliato se mi sono risvegliato per via del timer e se ho abbastanza tempo per eseguire l'emergenza provo a riacquisire i gemelli
 
@@ -328,8 +364,11 @@ int try_solve(emergency_t* emergenza, coppie_numero_gemelli* lst_coppie_n_gem, i
 
             }else{//se invece ho priorità 0 non necessito del timer e usa una cnd normale
 
-                THRD_CHECK(cnd_wait(&new_idle, &mtx_call_rescuers), "errore nella cnd_wait di new_idle");
+                THRD_CHECK(cnd_wait(&new_idle_pri0, &mtx_call_rescuers), "errore nella cnd_wait di new_idle");
                 printf("\nsono %s <x:%d,y:%d> e ho saputo ci sono nuovi idle\n\n", emergenza->type.emergency_desc, emergenza->x, emergenza->y);
+                emergenza->status=WAITING;
+                write_log(time(NULL), id, EMERGENCY_STATUS, "emergenza messa in WAITING");
+
 
             }
         }
@@ -358,19 +397,22 @@ int try_solve(emergency_t* emergenza, coppie_numero_gemelli* lst_coppie_n_gem, i
 emergency_t elaborazione(emergency_request_t emergenza, emergency_type_t* lista_tipi_emergenze, env amb, int len_lista,int id){//funzione che "parsa" la struttura lettan nella mq e effetua i dovuti controlli
 
     emergency_t istanza_emergenza;//creo la struttura che conterrà il risultato dell'elaborazione
+    istanza_emergenza.rescuers_dt=NULL;
 
     if(strcmp(emergenza.emergency_name, "NotFound")==0){//sfrutto il fatto di aver già controllato lato client se esisteva o meno l'emergenza
+
         write_log(time(NULL), id, MESSAGE_QUEUE, "richiesta emergenza non esistente");
         istanza_emergenza.status=CANCELED;
         write_log(time(NULL), id, EMERGENCY_STATUS, "richiesta CANCELED");
         return istanza_emergenza;
+
     }
 
     if(POS_AND_MIN(emergenza.x, amb.width) && POS_AND_MIN(emergenza.y, amb.height)){//controllo che le coordinate siano corrette
 
             for(size_t i=0;i<len_lista;i++){
 
-                if(strcmp(emergenza.emergency_name, lista_tipi_emergenze[i].emergency_desc)==0){//controllo se esiste l'emergenza
+                if(strcmp(emergenza.emergency_name, lista_tipi_emergenze[i].emergency_desc)==0){//cerco l'emergenza richiesta (sono sicuro che esista perchè senno mi sarei fermato all'if precedente)
 
                     istanza_emergenza.type=lista_tipi_emergenze[i];//assegno il tipo
                     istanza_emergenza.status=WAITING;//assegno lo stato in attesa
@@ -382,12 +424,14 @@ emergency_t elaborazione(emergency_request_t emergenza, emergency_type_t* lista_
 
                     write_log(time(NULL), id, MESSAGE_QUEUE, "richiesta elaborata correttamente");
                     write_log(time(NULL), id, EMERGENCY_STATUS, "emergenza messa in stato di WAIT");
+                    break;
                 }
         }
 
-    return istanza_emergenza;
+        return istanza_emergenza;
 
     }else{
+
         istanza_emergenza.status=CANCELED;
         write_log(time(NULL), id, MESSAGE_QUEUE, "coordinate errate inserite");
         write_log(time(NULL), id, EMERGENCY_STATUS, "richiesta CANCELED");
@@ -420,7 +464,7 @@ int handler_emergency(void* arg){
     if(strcmp(req.emergency_name,"shutdown_server")==0){
         write_log(time(NULL), data->id, SHUTDOWN, "richiesta di shutdown server");
         free(data);
-        go=0;
+        atomic_store(&go, 0);
         return thrd_success;
     }
     
@@ -432,18 +476,19 @@ int handler_emergency(void* arg){
     
     if(emergenza.status!=CANCELED){//se elaborazione non ha trovato errori provo a risolvere l'emergenza
 
-    printf("sono thrd %d e ho elaborato %s di priorità %hd a <x:%d, y:%d>\n",data->id, emergenza.type.emergency_desc,emergenza.type.priority, emergenza.x, emergenza.y);
+        printf("sono thrd %d e ho elaborato %s di priorità %hd a <x:%d, y:%d>\n",data->id, emergenza.type.emergency_desc,emergenza.type.priority, emergenza.x, emergenza.y);
 
-    if(try_solve(&emergenza, (data->lista_soccorritori), data->len_lst_socc, data->id)){
-        //printf("emergenza: %s a <x:%d, y:%d> risolta\n", emergenza.type.emergency_desc, emergenza.x, emergenza.y);
-    }else{
-        printf("emergenza: %s a <x:%d, y:%d> non risolta\n", emergenza.type.emergency_desc, emergenza.x, emergenza.y);
-    }
+        if(try_solve(&emergenza, (data->lista_soccorritori), data->len_lst_socc, data->id)){
+            //printf("emergenza: %s a <x:%d, y:%d> risolta\n", emergenza.type.emergency_desc, emergenza.x, emergenza.y);
+        }else{
+            //printf("emergenza: %s a <x:%d, y:%d> non risolta\n", emergenza.type.emergency_desc, emergenza.x, emergenza.y);
+        }
     
     }else{
-        //printf("sono thrd %d , emergenza non valida\n", data->id, emergenza.type.emergency_desc);
+        printf("sono thrd %d , emergenza non valida\n", data->id);
     }
 
+    free(emergenza.rescuers_dt);
     free(data);
     return thrd_success;
 }

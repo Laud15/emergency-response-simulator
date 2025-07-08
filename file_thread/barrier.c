@@ -8,7 +8,7 @@ void barrier_em_status(emergency_status_t* stato, int* count, int num_thread_bar
     (*count)++;
     if(*(count)==num_thread_barrier){
 
-        printf("sono %d e sono arrivato per ultimo\n", *count);
+        //printf("sono %d e sono arrivato per ultimo\n", *count);
         printf("ci siamo tutti!\n");
         *stato=IN_PROGRESS;//una volta che tutti sono arrivati setto lo stato dell'emergenza a IN_PROGRESS
         write_log(time(NULL), id, EMERGENCY_STATUS, "emergenza IN PROGRESS");
@@ -17,7 +17,7 @@ void barrier_em_status(emergency_status_t* stato, int* count, int num_thread_bar
         mtx_unlock(mtx_barrier);
         
     }else{
-        printf("sono arrivato %d e mi metto in attesa\n", *count);
+        //printf("sono arrivato %d e mi metto in attesa\n", *count);
         cnd_wait(cnd_barrier, mtx_barrier);
         mtx_unlock(mtx_barrier);
     }

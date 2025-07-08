@@ -10,7 +10,6 @@ int main(int argc, char* argv[]){
     
     if(argc > 1){
 
-
         //INIZIO PARTE SHM________________________________________________________________________________________________
         char nome_mq[QUEUE_NAME_LENGTH];
         coppia_emergenza_priorità* coppie_em_pri_client=NULL;
@@ -25,16 +24,16 @@ int main(int argc, char* argv[]){
         int len_em_pri = dati_shm->prio;//salvo la lunghezza della lista in una variabile
         strcpy(nome_mq, dati_shm->nome);//prendo il nome della mq
 
-        MMAP(dati_shm, mmap(NULL, (sizeof(coppia_emergenza_priorità)*len_em_pri), PROT_READ, MAP_SHARED, fd_shm, 0), "errore durante la 2° mmap");
+        MMAP(dati_shm, mmap(NULL, (sizeof(coppia_emergenza_priorità)*(len_em_pri+1)), PROT_READ, MAP_SHARED, fd_shm, 0), "errore durante la 2° mmap");
         
         SNCALL(coppie_em_pri_client, malloc(sizeof(coppia_emergenza_priorità)*len_em_pri), "errore durante la malloc delle coppie per il client");
         
-        for(size_t i=1;i<(len_em_pri+1);i++){
+        for(size_t i=1;i<=len_em_pri;i++){
             coppie_em_pri_client[i-1]=dati_shm[i];//copio gli elementi della lista trovata nella shm nella lista che userò nel resto del programma
         }
         write_log(time(NULL), 0, SHM, "letta lista coppie_em_pri");
 
-        EQ_ERROR(munmap(dati_shm, (sizeof(coppia_emergenza_priorità)*len_em_pri)), "errore nella munmap");
+        EQ_ERROR(munmap(dati_shm, (sizeof(coppia_emergenza_priorità)*(len_em_pri+1))), "errore nella munmap");
         EQ_ERROR(close(fd_shm),"errore nella chiusura della shm");//libero la memoria e chiudo la shm
         write_log(time(NULL), 0, SHM, "chiusura shm lato client");
 
@@ -118,8 +117,9 @@ int main(int argc, char* argv[]){
     EQ_ERROR(mq_close(mq),"errore nella chiusura della mq");
     write_log(time(NULL), 0, MESSAGE_QUEUE, "mq lato client chiusa");
 
-    }else{fprintf(stderr,"non sono stati passati argomenti");}
+    }else{
+        fprintf(stderr,"non sono stati passati argomenti");
+    }
 
     return 0;
 }
-

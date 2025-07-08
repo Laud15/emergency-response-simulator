@@ -1,6 +1,6 @@
 #include "../file_header/thread_client.h"
 #include "../file_header/write_log.h"
-
+  
 
 int thread_parse_function(void* arg){
 

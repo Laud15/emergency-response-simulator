@@ -41,13 +41,13 @@ void write_log(long timestamp, int id, log_event event, char* msg){
 
     SCALL(fd,open(PATH_LOG, O_WRONLY | O_APPEND, 0620), "errore nell'apertura del file di log");
     
-    strftime(buffer_date, LEN_DATE, "%Y-%m-%d %H:%M:%S", localtime(&timestamp));
+    strftime(buffer_date, LEN_DATE, "%Y-%m-%d %H:%M:%S", localtime(&timestamp));//converto il tempo in un formato più leggibile
     
-    SCALL(len, snprintf(buffer, BUFFERSIZE,"[%s] [%d] [%s]  %s\n",buffer_date, id, event_to_string(event), msg), "errore nella snprintf");
+    SCALL(len, snprintf(buffer, BUFFERSIZE,"[%s] [%d] [%s]  %s\n",buffer_date, id, event_to_string(event), msg), "errore nella snprintf");//"formatto" la stringa che andrò poi a scrivere nel file di log
 
 
-    EQ_ERROR(write(fd,buffer,len), "errore nella scrittura nel file di log");
-    EQ_ERROR(close(fd), "errore nella chiusura del file di log");
+    EQ_ERROR(write(fd,buffer,len), "errore nella scrittura nel file di log");//scrivo la riga formattata
+    EQ_ERROR(close(fd), "errore nella chiusura del file di log");//chiudo il file
 
     return;
 }
