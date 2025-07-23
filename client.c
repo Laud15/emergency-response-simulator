@@ -8,51 +8,28 @@ int main(int argc, char* argv[]){
 
     mqd_t mq;//dichiaro la mq
     
+
     if(argc > 1){
 
-        //INIZIO PARTE SHM________________________________________________________________________________________________
-        char nome_mq[QUEUE_NAME_LENGTH];
-        coppia_emergenza_priorità* coppie_em_pri_client=NULL;
-        coppia_emergenza_priorità* dati_shm=NULL;
-        int fd_shm;
+        res_parser env_res;
+        env ambiente;
+        env_res=parse_env(&ambiente);
 
-        SCALL(fd_shm, shm_open(SHM_NAME, O_RDONLY, 0620), "errore nell'apertura della shm");
-        write_log(time(NULL), 0, SHM, "apertura shm lato client");
-
-        MMAP(dati_shm, mmap(NULL, sizeof(coppia_emergenza_priorità), PROT_READ, MAP_SHARED, fd_shm, 0), "errore durante la 1° mmap");
-
-        int len_em_pri = dati_shm->prio;//salvo la lunghezza della lista in una variabile
-        strcpy(nome_mq, dati_shm->nome);//prendo il nome della mq
-
-        MMAP(dati_shm, mmap(NULL, (sizeof(coppia_emergenza_priorità)*(len_em_pri+1)), PROT_READ, MAP_SHARED, fd_shm, 0), "errore durante la 2° mmap");
-        
-        SNCALL(coppie_em_pri_client, malloc(sizeof(coppia_emergenza_priorità)*len_em_pri), "errore durante la malloc delle coppie per il client");
-        
-        for(size_t i=1;i<=len_em_pri;i++){
-            coppie_em_pri_client[i-1]=dati_shm[i];//copio gli elementi della lista trovata nella shm nella lista che userò nel resto del programma
+        if(env_res.error==SCALL_ERROR){//controllo che il parse sia andato a buon fine
+            perror("errore nel parse dell'ambiente");
+            exit(EXIT_FAILURE);
         }
-        write_log(time(NULL), 0, SHM, "letta lista coppie_em_pri");
-
-        EQ_ERROR(munmap(dati_shm, (sizeof(coppia_emergenza_priorità)*(len_em_pri+1))), "errore nella munmap");
-        EQ_ERROR(close(fd_shm),"errore nella chiusura della shm");//libero la memoria e chiudo la shm
-        write_log(time(NULL), 0, SHM, "chiusura shm lato client");
-
-        //FINE PARTE SHM_____________________________________________________________________
-
-
-        SCALL(mq, mq_open(nome_mq ,O_WRONLY), "errore nell'apertura della mq");//controllo che l'apertura della mq vada a buon fine
+        
+        SCALL(mq, mq_open(ambiente.nome_msg_queue ,O_WRONLY), "errore nell'apertura della mq");//controllo che l'apertura della mq vada a buon fine
         write_log(time(NULL), 0, MESSAGE_QUEUE, "message queue lato server aperta");  
 
-        /*for(size_t i=0;i<len_em_pri;i++){
-            printf("nome=%s, prio=%hd\n", coppie_em_pri_client[i].nome, coppie_em_pri_client[i].prio);
-        }*/
 
-        if(argc==3 && (strcmp(argv[1], "-f"))==0){//CONTROLLO SE HO IL FILE
+        if(argc==3 && (strcmp(argv[1], "-f"))==STRCMP_TRUE){//CONTROLLO SE HO IL FILE
 
-            res_parser res_scroll_file;//dichiaro la variabile che accoglierà il risultato del parse
-            res_scroll_file=parse_file(argv[2], mq, coppie_em_pri_client, len_em_pri);//parso il file e invio il risultato nella mq (il parse di ogni riga e l'invio è gestito da più thread)
+            res_parser res_file;//dichiaro la variabile che accoglierà il risultato del parse
+            res_file=parse_and_send(argv[2], mq);//parso il file e invio il risultato nella mq (il parse di ogni riga e l'invio è gestito da più thread)
             
-            if(res_scroll_file.error==SCALL_ERROR){//controllo che non ci siano stato errori durante il parsing e l'invio 
+            if(res_file.error==SCALL_ERROR){//controllo che non ci siano stato errori durante il parsing e l'invio 
 
                 EQ_ERROR(mq_close(mq),"errore nella chiusura della mq");
                 perror("errore nel parsing del file");
@@ -68,17 +45,6 @@ int main(int argc, char* argv[]){
             emergenza.x=atoi(argv[2]);
             emergenza.y=atoi(argv[3]);
             int delay = atoi(argv[4]);
-            int prio;
-
-            for(size_t i=0; i<len_em_pri;i++){
-                if(strcmp(emergenza.emergency_name, coppie_em_pri_client[i].nome)==0){
-                    prio=coppie_em_pri_client[i].prio;
-                    break;
-                }else if(i==(len_em_pri-1)){
-                    prio=0;
-                    strcpy(emergenza.emergency_name, "NotFound");
-                }
-            }
 
             if(delay>=0){//controllo che il delay sia positivo
                 sleep(delay);
@@ -88,13 +54,14 @@ int main(int argc, char* argv[]){
 
             emergenza.timestamp=time(NULL);
             
-            EQ_ERROR(mq_send(mq, (char*)(&emergenza), sizeof(emergenza), prio), "errore nell'invio del messaggio");
+            EQ_ERROR(mq_send(mq, (char*)(&emergenza), sizeof(emergenza), 0), "errore nell'invio del messaggio");
 
             snprintf(buffer, BUFFERSIZE, "%s %d %d %d", emergenza.emergency_name, emergenza.x, emergenza.y, delay);
             write_log(time(NULL), 0, CLIENT_REQUEST, buffer);
             printf("messaggio inviato con successo\n");
-
-        }else if(strcmp(argv[1], "shutdown_server")==0){
+        
+            
+        }else if(strcmp(argv[1], "shutdown_server")==STRCMP_TRUE){
 
             emergency_request_t sd_request;
             strcpy(sd_request.emergency_name, argv[1]);
@@ -113,7 +80,6 @@ int main(int argc, char* argv[]){
             write_log(time(NULL), 0, INVALID_INPUT, "input non valido dato da riga di comando");
         }
     
-    free(coppie_em_pri_client);
     EQ_ERROR(mq_close(mq),"errore nella chiusura della mq");
     write_log(time(NULL), 0, MESSAGE_QUEUE, "mq lato client chiusa");
 

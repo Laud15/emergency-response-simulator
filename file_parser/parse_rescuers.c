@@ -42,7 +42,7 @@ res_parser parse_rescuers(coppie_numero_gemelli** lista_coppie){ //passo come ar
         rescuer->x=x_tmp;
         rescuer->y=y_tmp;
         
-        (*lista_coppie)[res.cnt].n= num_tmp; //assegno al campo n dell'elemento corrente della lista il numero di gemelli del rescuers e poi alloco lo spazio 
+        (*lista_coppie)[res.cnt].dt_idle= num_tmp; //assegno al campo dt_idle dell'elemento corrente della lista il numero di gemelli del rescuers e poi alloco lo spazio 
         
         NCALL_PARSER(((*lista_coppie)[res.cnt].lst_gemelli), malloc(sizeof(rescuer_digital_twin_t)*num_tmp), "errore nell'allocazione dello spazio per i digital twin", res, fd);
         

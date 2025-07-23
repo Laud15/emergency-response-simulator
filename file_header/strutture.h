@@ -82,7 +82,6 @@ typedef enum{
     FILE_PARSING_ENV,
     FILE_PARSING_RESCUERS,
     FILE_PARSING_EMERGENCY_T,
-    SHM,
     MESSAGE_QUEUE,
     EMERGENCY_STATUS,
     RESCUER_STATUS,
@@ -101,15 +100,9 @@ typedef struct{
 }res_parser;//definisco la struttura di ritorno dei parser, error viene no sempre inizializzato a 0 e rimane a 0 se non si verifica nessun errore, altrimenti viene messo a -1
 
 typedef struct{
-    int n;
+    int dt_idle;//questo campo si utilizza anche per indicare quanti dt del tipo sono in stato di IDLE
     rescuer_digital_twin_t* lst_gemelli;
 }coppie_numero_gemelli; //definisco una struttura con due campi, il primo un intero e il secondo un puntatore a rescuer_digital_twin_t
-
-typedef struct{
-    char nome[EMERGENCY_NAME_LENGTH];
-    short prio;
-}coppia_emergenza_priorità;
-
 
 typedef struct{
     char nome_msg_queue[QUEUE_NAME_LENGTH];
@@ -117,29 +110,7 @@ typedef struct{
     int width;
 }env;
 
-//Strutture usate per i thread
-
-typedef struct{ 
-
-    char* riga;
-    int (*f)(char*, emergency_request_t*);//funzione di che fara il parsing della liga
-    int len_em_pri;
-    mqd_t mq;
-    coppia_emergenza_priorità* list_em_pri;//lista da dove prelevare la priorità
-
-}data_client_parse;//utilizzo questa funzione per passare al thread una riga da parsare, un parser e un posto dove mettere la riga parsata
-
-
-typedef struct{
-    int id;//id dell'emergenza
-    coppie_numero_gemelli* lista_soccorritori;//lista contente tutti i gemelli parsati all'avvio del server
-    emergency_type_t* lista_tipi_emergenze;//lista contenente tutti i tipi di emergenza parsati all'avvio del server
-    env amb;//struttura contente larghezza, altezza e nome della mq
-    mqd_t* mq;//puntatore alla mq aperta
-    int  len_lst_socc;//lunghezza lista soccorritori
-    int len_lst_em;//lunghezza lista emergenze
-}data_server_thread;
-
+//Strutture usate come argomento per le funzioni dei thread
 
 typedef struct {
 
@@ -147,7 +118,7 @@ typedef struct {
     int dest_x;
     int dest_y;//coordinate di destinazione
     int time_manage;//per quanto tempo il rescuer dovrà fermarsi sul luogo dell'emergenza
-    int* count;//contatre comune a tutti i thread soccorritori di un emergenza, serve per sincronizzarsi nella barrier
+    int* count;//contatore comune a tutti i thread soccorritori di un emergenza, serve per sincronizzarsi nella barrier
     cnd_t* cnd_barrier;//
     mtx_t* mtx_barrier;//elementi usati per la sincronizzazione(ogni thread emergenza ne ha una copia diversa)
     atomic_int* n_twin;//numero di gemelli richiesti dall'emergenza, questa variabile è condivisa da tutti i thread soccorritori creati da un'emergenza

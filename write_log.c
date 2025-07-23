@@ -9,24 +9,22 @@ const char* event_to_string(log_event event){
     case 2:
         return "PARSE FILE EMERGENCY TYPE";
     case 3:
-        return "SHARED MEMORY";
-    case 4:
         return "MSQ";
-    case 5:
+    case 4:
         return "EMERGENCY STATUS";
-    case 6:
+    case 5:
         return "RESCUER STATUS";
-    case 7:
+    case 6:
         return "RESCUER ASSIGNMENT";
-    case 8:
+    case 7:
         return "TIMEOUT FOR DISTANCE";
-    case 9:
+    case 8:
         return "TIMEOUT FOR RESOURCES";
-    case 10:
+    case 9:
         return "INVALID INPUT";
-    case 11:
+    case 10:
         return "CLIENT REQUEST";
-    case 12:
+    case 11:
         return "SHUTDOWN REQUEST";
     default:
         return "NO_REG_EVENT";

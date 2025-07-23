@@ -55,7 +55,7 @@ res_parser parse_emergency_types(emergency_type_t** lst, coppie_numero_gemelli* 
             }
             
             for(size_t i=0;i<len_lista_soccorritori;i++){//scorro la lista di soccorritori
-                if((strcmp(lista_soccorritori[i].lst_gemelli[0].rescuer->rescuer_type_name, nome))==0){//controllo se il nome del tipo di soccorritori e quello parsato combaciano (do per assodato che il file di emergenze contenga richieste di soccorritori sempre esistenti)
+                if((strcmp(lista_soccorritori[i].lst_gemelli[0].rescuer->rescuer_type_name, nome))==STRCMP_TRUE){//controllo se il nome del tipo di soccorritori e quello parsato combaciano (do per assodato che il file di emergenze contenga richieste di soccorritori sempre esistenti)
                     (*lst)[res.cnt].rescuers[req_number].type=lista_soccorritori[i].lst_gemelli[0].rescuer;//se lo fanno assegno il puntatore al campo type dell'elemento 
                     (*lst)[res.cnt].rescuers[req_number].time_to_manage=time_to_manage;//assegno il tempo per gestire l'emergenza
                     (*lst)[res.cnt].rescuers[req_number].required_count=num;//assegno il numero di soccorritori richiesti

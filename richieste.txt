@@ -1,7 +1,13 @@
-Furto 200 150 1
-Terremoto 111 109 1
-Caduta_albero 110 185 1
-Furto 180 170 1
-Terremoto 110 200 1
-Incendio 109 201 1
-Allagamento 111 202 1
+Incendio 130 195 1
+
+Terremoto 130 200 1
+Furto 100 150 1
+Caduta_albero 110 160 1
+Apocalisse 129 196 1
+
+
+Allagamento 280 280 1
+Rissa 290 250 1
+
+Incendio 131 194 1
+

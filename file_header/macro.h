@@ -1,8 +1,6 @@
 #ifndef MACRO_H
 #define MACRO_H
 
-#define _POSIX_C_SOURCE 200809L
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -24,11 +22,13 @@
 #define LEN_DATE 128
 #define SCALL_ERROR -1
 #define NUM_THREAD_SERVER 10
+#define PRI_0 0
+#define PRI_1 1
+#define PRI_2 2
+#define STRCMP_TRUE 0
 
-extern atomic_int go;
 extern int id_operazione;
 
-#define SHM_NAME "/shared_memory"
 #define PATH_LOG "log_file.log"
 #define PATH_RESCUERS "file_conf/rescuers.conf"
 #define PATH_EMERGENCY_TYPES "file_conf/emergency_types.conf"
@@ -67,7 +67,7 @@ extern int id_operazione;
 #define FREE_ALL_RESCUE(list, len_list) do{\
     if((*list) != NULL){\
         for(size_t i=0;i<len_list;i++){\
-            if(((*list)[i].lst_gemelli) != NULL && (*list)[i].n > 0){\
+            if(((*list)[i].lst_gemelli) != NULL && (*list)[i].dt_idle > 0){\
                 if(((*list)[i].lst_gemelli[0].rescuer) !=NULL){\
                     if((((*list)[i]).lst_gemelli[0].rescuer->rescuer_type_name) != NULL){\
                         free(((*list)[i].lst_gemelli[0].rescuer->rescuer_type_name));\
@@ -136,7 +136,6 @@ extern int id_operazione;
 #define POS_AND_MIN(x, n) (((x) > 0 && (x) <= (n)) ? 1 : 0)
 
 #define THRD_CHECK(t, e)do{if(t==thrd_error){perror(e);exit(EXIT_FAILURE);}}while(0)
-#define MMAP(r, c, e) do { if((r = (c)) == MAP_FAILED) { perror(e); exit(EXIT_FAILURE); } } while(0)
 #define EQ_ERROR(n, e) do{if(n==SCALL_ERROR){perror(e);exit(EXIT_FAILURE);} }while(0)
 #define EQN_ERROR(n, e) do{if(n==NULL){perror(e);exit(EXIT_FAILURE);} }while(0)
 
