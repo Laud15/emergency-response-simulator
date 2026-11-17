@@ -30,9 +30,9 @@
 extern int operation_id;
 
 #define PATH_LOG "log_file.log"
-#define PATH_RESCUERS "file_conf/rescuers.conf"
-#define PATH_EMERGENCY_TYPES "file_conf/emergency_types.conf"
-#define PATH_ENV "file_conf/env.conf"
+#define PATH_RESCUERS "config/rescuers.conf"
+#define PATH_EMERGENCY_TYPES "config/emergency_types.conf"
+#define PATH_ENV "config/env.conf"
 
 // Error-checking helpers adapted from course material.
 

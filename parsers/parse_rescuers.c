@@ -1,5 +1,5 @@
-#include "../file_header/parse_rescuers.h"
-#include "../file_header/write_log.h"
+#include "../include/parse_rescuers.h"
+#include "../include/write_log.h"
 
 // Load [name] [count] [speed] [base_x;base_y] rows into responder pools.
 parser_result_t parse_rescuers(rescuer_pool_t** rescuer_pools){

@@ -1,8 +1,8 @@
-#include "file_header/macro.h"
-#include "file_header/strutture.h"
-#include "file_header/parse_env.h"
-#include "file_header/parse_request.h"
-#include "file_header/write_log.h"
+#include "include/macro.h"
+#include "include/simulation_types.h"
+#include "include/parse_env.h"
+#include "include/parse_request.h"
+#include "include/write_log.h"
 
 int main(int argc, char* argv[]){
 

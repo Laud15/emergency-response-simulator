@@ -1,5 +1,5 @@
-#include "../file_header/parse_emergency_types.h"
-#include "../file_header/write_log.h"
+#include "../include/parse_emergency_types.h"
+#include "../include/write_log.h"
 
 // Load [name] [priority] type:count,service_seconds;... rows.
 parser_result_t parse_emergency_types(emergency_type_t** lst, rescuer_pool_t* rescuer_pools, int rescuer_pool_count){

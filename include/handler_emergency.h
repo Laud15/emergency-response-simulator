@@ -2,7 +2,7 @@
 #define THREAD_SERVE_H
 
 #include "macro.h"
-#include "strutture.h"
+#include "simulation_types.h"
 
 extern cnd_t new_idle_pri2;
 extern cnd_t new_idle_pri1;

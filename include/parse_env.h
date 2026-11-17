@@ -2,7 +2,7 @@
 #define PARSE_ENV_H
 
 #include "macro.h"
-#include "strutture.h"
+#include "simulation_types.h"
 
 parser_result_t parse_env(environment_t*);
 

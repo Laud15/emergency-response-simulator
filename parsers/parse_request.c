@@ -1,5 +1,5 @@
-#include "../file_header/parse_request.h"
-#include "../file_header/write_log.h"
+#include "../include/parse_request.h"
+#include "../include/write_log.h"
 
 int operation_id=0;
 

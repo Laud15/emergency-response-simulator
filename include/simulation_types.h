@@ -1,5 +1,5 @@
-#ifndef STRUTTURE_H
-#define STRUTTURE_H
+#ifndef SIMULATION_TYPES_H
+#define SIMULATION_TYPES_H
 
 #include <time.h>
 #include <mqueue.h>

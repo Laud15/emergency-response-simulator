@@ -24,12 +24,13 @@ simulates travel and on-site work, and logs state changes.
 Use Linux with POSIX message queues enabled, GCC with C11 thread and atomic
 support, GNU Make, and the system libraries required by `-lrt`.
 
-Run commands from the repository root. Keep `log_file.log` in place: the logger
-appends to an existing file and does not create it. Configuration paths are also
-relative to the working directory. The `heigth` key in `file_conf/env.conf` is
-the spelling expected by the parser.
+Run commands from the repository root. Configuration is loaded from `config/`
+using paths relative to the working directory. Create `log_file.log` before
+starting either executable: the logger appends to an existing file and does not
+create it.
 
 ```sh
+touch log_file.log
 make all
 ```
 
@@ -47,7 +48,7 @@ In one terminal:
 In a second terminal, from the same repository root:
 
 ```sh
-./client Furto 120 220 0
+./client Theft 120 220 0
 ```
 
 Arguments are `emergency_name x y delay_seconds`. This example requests one
@@ -62,17 +63,20 @@ Wait for `emergenza COMPLETED` and the responder's return to `IDLE` in
 ./client shutdown_server
 ```
 
-The client also supports a request file; this command has been checked against
-the source but **has not been run during this review**:
+The client also supports a user-supplied request file. Create `requests.txt`
+with one `emergency_name x y delay_seconds` entry per line, for example
+`Theft 120 220 0`. This mode has been checked against the source but
+**has not been run during this review**:
 
 ```sh
-./client -f richieste.txt
+./client -f requests.txt
 ```
 
 Each nonempty line contains `emergency_name x y delay_seconds`. Requests are
 sent sequentially, waiting the specified delay before each send.
 
-**Verification:** `make all`, `./server`, `./client Furto 120 220 0` and
+**Verification:** `touch log_file.log`, `make all`, `./server`,
+`./client Theft 120 220 0` and
 `./client shutdown_server` were run successfully in a temporary copy on Linux
 x86_64 with GCC 16.2.1 and GNU Make 4.4.1. The log recorded completion and return
 to base, and the server exited successfully and removed its queue. Compilation
@@ -84,11 +88,11 @@ remain unverified.
 | Path | Purpose |
 | --- | --- |
 | `server.c`, `client.c` | Server startup and request submission |
-| `file_thread/` | Emergency handling, responder lifecycle and arrival barrier |
-| `file_parser/`, `file_header/` | Parsers, shared types, constants and interfaces |
-| `file_conf/` | Environment, responder and emergency-type configuration |
-| `write_log.c`, `log_file.log` | Event logging and its output file |
-| `richieste.txt` | Sample request file |
+| `threads/` | Emergency handling, responder lifecycle and arrival barrier |
+| `parsers/`, `include/` | Parsers, shared types, constants and interfaces |
+| `include/simulation_types.h` | Simulation states and shared data structures |
+| `config/` | Environment, responder and emergency-type configuration |
+| `write_log.c`, `log_file.log` | Event logger and runtime log; create the log before startup |
 
 ## Limitations
 

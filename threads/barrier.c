@@ -1,5 +1,5 @@
-#include "../file_header/barrier.h"
-#include "../file_header/write_log.h"
+#include "../include/barrier.h"
+#include "../include/write_log.h"
 
 void barrier_em_status(emergency_status_t* status, int* count, int num_thread_barrier, mtx_t* mtx_barrier, cnd_t* cnd_barrier, int id){
     

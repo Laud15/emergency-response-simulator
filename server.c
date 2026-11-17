@@ -1,10 +1,10 @@
-#include "file_header/macro.h"
-#include "file_header/strutture.h"
-#include "file_header/parse_rescuers.h"
-#include "file_header/parse_emergency_types.h"
-#include "file_header/parse_env.h"
-#include "file_header/handler_emergency.h"
-#include "file_header/write_log.h"
+#include "include/macro.h"
+#include "include/simulation_types.h"
+#include "include/parse_rescuers.h"
+#include "include/parse_emergency_types.h"
+#include "include/parse_env.h"
+#include "include/handler_emergency.h"
+#include "include/write_log.h"
 
 atomic_int go=1;
 int operation_id=0;

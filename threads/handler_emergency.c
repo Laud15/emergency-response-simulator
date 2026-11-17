@@ -1,6 +1,6 @@
-#include "../file_header/handler_emergency.h"
-#include "../file_header/barrier.h"
-#include "../file_header/write_log.h"
+#include "../include/handler_emergency.h"
+#include "../include/barrier.h"
+#include "../include/write_log.h"
 
 #define TIME_PRI1 30
 #define TIME_PRI2 10

@@ -1,7 +1,7 @@
-#include "../file_header/parse_env.h"
-#include "../file_header/write_log.h"
+#include "../include/parse_env.h"
+#include "../include/write_log.h"
 
-// Read queue, heigth and width in that order from the environment file.
+// Read queue, height and width in that order from the environment file.
 parser_result_t parse_env(environment_t* environment){
     parser_result_t res;
     res.cnt=0;
@@ -21,9 +21,8 @@ parser_result_t parse_env(environment_t* environment){
     write_log(time(NULL), operation_id, FILE_PARSING_ENV, buffer);
     res.cnt++;
 
-    // Keep the configuration key's existing "heigth" spelling.
     fgets(buffer, BUFFERSIZE, fd);
-    CHECK_SSCANF((sscanf(buffer,"heigth=%d\n", &(environment->height))), 1, buffer, res, fd);
+    CHECK_SSCANF((sscanf(buffer,"height=%d\n", &(environment->height))), 1, buffer, res, fd);
     write_log(time(NULL), operation_id, FILE_PARSING_ENV, buffer);
     res.cnt++;
 

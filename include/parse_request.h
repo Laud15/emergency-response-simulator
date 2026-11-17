@@ -2,7 +2,7 @@
 #define PARSE_REQUEST_H
 
 #include "macro.h"
-#include "strutture.h"
+#include "simulation_types.h"
 
 // Read a request file and send valid rows sequentially after their delays.
 parser_result_t parse_and_send(char*, mqd_t);
