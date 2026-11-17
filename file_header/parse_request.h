@@ -4,8 +4,11 @@
 #include "macro.h"
 #include "strutture.h"
 
-res_parser parse_and_send(char*, mqd_t);//funzione che prende in input un puntatore ad un puntatore di una lista di puntatori a stringhe e un path di file, la funzione scorre tutte le righe del filee le mette nella lista
+// Read a request file and send valid rows sequentially after their delays.
+parser_result_t parse_and_send(char*, mqd_t);
 
-int parse_riga(char*, emergency_request_t*);//presa una riga e un puntatore a emergency_request t, legge la riga, assegna il nome, x, y letti all'emergneza e ne setta il timestamp e restituisce il delay
+// Parse name and coordinates, returning the delay; the caller sets the timestamp.
+// On a malformed row, set the name to "Errore" and return zero.
+int parse_request_line(char*, emergency_request_t*);
 
 #endif

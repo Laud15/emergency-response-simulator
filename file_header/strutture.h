@@ -10,7 +10,7 @@
 #define RESCUER_NAME_LENGTH 64
 #define QUEUE_NAME_LENGTH 128
 
-//STRUTTURE RICHIESTE DALLA CONSEGNA
+// Core simulation types based on the assignment specification.
 
 typedef enum{
     WAITING, 
@@ -44,7 +44,6 @@ typedef struct{
     rescuer_status_t    status;
 }rescuer_digital_twin_t;
 
-
 typedef struct {
     rescuer_type_t *    type;
     int                 required_count;
@@ -72,11 +71,11 @@ typedef struct {
     int                     y;
     time_t                  time;
     int                     rescuer_count;
-    rescuer_digital_twin_t** rescuers_dt; //cambiato da quello  originale per far si di poter contenere il riferimento ai puntatori dei gemelli allocati inizialmente con il parse
+    // Borrowed references to responder instances allocated by parse_rescuers.
+    rescuer_digital_twin_t** rescuers_dt;
 }emergency_t;
 
-//-----------------STRUTTURE FATTE DA ME-----------------
-
+// Project-specific support types.
 
 typedef enum{
     FILE_PARSING_ENV,
@@ -93,39 +92,38 @@ typedef enum{
     SHUTDOWN
 }log_event;
 
-
+// Parser result: processed entry count and error status (0 or -1).
 typedef struct{
    int cnt;
    int error;
-}res_parser;//definisco la struttura di ritorno dei parser, error viene no sempre inizializzato a 0 e rimane a 0 se non si verifica nessun errore, altrimenti viene messo a -1
+}parser_result_t;
 
 typedef struct{
-    int dt_idle;//questo campo si utilizza anche per indicare quanti dt del tipo sono in stato di IDLE
-    rescuer_digital_twin_t* lst_gemelli;
-}coppie_numero_gemelli; //definisco una struttura con due campi, il primo un intero e il secondo un puntatore a rescuer_digital_twin_t
+    int idle_count; // Available count, also used as the allocation boundary.
+    rescuer_digital_twin_t* instances;
+}rescuer_pool_t;
 
 typedef struct{
-    char nome_msg_queue[QUEUE_NAME_LENGTH];
+    char queue_name[QUEUE_NAME_LENGTH];
     int height;
     int width;
-}env;
+}environment_t;
 
-//Strutture usate come argomento per le funzioni dei thread
+// Arguments for one responder thread; synchronization state is shared per emergency.
 
 typedef struct {
 
-    int id;//id della richiesta
+    int id;
     int dest_x;
-    int dest_y;//coordinate di destinazione
-    int time_manage;//per quanto tempo il rescuer dovrà fermarsi sul luogo dell'emergenza
-    int* count;//contatore comune a tutti i thread soccorritori di un emergenza, serve per sincronizzarsi nella barrier
-    cnd_t* cnd_barrier;//
-    mtx_t* mtx_barrier;//elementi usati per la sincronizzazione(ogni thread emergenza ne ha una copia diversa)
-    atomic_int* n_twin;//numero di gemelli richiesti dall'emergenza, questa variabile è condivisa da tutti i thread soccorritori creati da un'emergenza
-    rescuer_digital_twin_t* twin;//puntatore al soccorritore (ovvero uno dei soccorritori chiamati da call_rescuers)
-    emergency_status_t* stato_emergenza;//puntatore allo stato dell'emergenza chiamata
+    int dest_y;
+    int time_manage; // On-site service time in seconds.
+    int* count; // Arrival count shared by this emergency's responders.
+    cnd_t* cnd_barrier;
+    mtx_t* mtx_barrier;
+    atomic_int* n_twin; // Shared work counter, also used to claim completion.
+    rescuer_digital_twin_t* twin;
+    emergency_status_t* emergency_status;
 
-}data_rescuer_thread;
-
+}rescuer_thread_data_t;
 
 #endif

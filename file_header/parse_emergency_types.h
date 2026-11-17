@@ -4,7 +4,7 @@
 #include "strutture.h"
 #include "macro.h"
 
-res_parser parse_emergency_types(emergency_type_t**, coppie_numero_gemelli*, int);
+parser_result_t parse_emergency_types(emergency_type_t**, rescuer_pool_t*, int);
 
 
 #endif

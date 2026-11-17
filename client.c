@@ -6,30 +6,29 @@
 
 int main(int argc, char* argv[]){
 
-    mqd_t mq;//dichiaro la mq
-    
+    mqd_t mq;
 
     if(argc > 1){
 
-        res_parser env_res;
-        env ambiente;
-        env_res=parse_env(&ambiente);
+        parser_result_t env_res;
+        environment_t environment;
+        env_res=parse_env(&environment);
 
-        if(env_res.error==SCALL_ERROR){//controllo che il parse sia andato a buon fine
+        if(env_res.error==SCALL_ERROR){
             perror("errore nel parse dell'ambiente");
             exit(EXIT_FAILURE);
         }
         
-        SCALL(mq, mq_open(ambiente.nome_msg_queue ,O_WRONLY), "errore nell'apertura della mq");//controllo che l'apertura della mq vada a buon fine
+        SCALL(mq, mq_open(environment.queue_name ,O_WRONLY), "errore nell'apertura della mq");
         write_log(time(NULL), 0, MESSAGE_QUEUE, "message queue lato server aperta");  
 
+        if(argc==3 && (strcmp(argv[1], "-f"))==STRCMP_TRUE){
 
-        if(argc==3 && (strcmp(argv[1], "-f"))==STRCMP_TRUE){//CONTROLLO SE HO IL FILE
-
-            res_parser res_file;//dichiaro la variabile che accoglierà il risultato del parse
-            res_file=parse_and_send(argv[2], mq);//parso il file e invio il risultato nella mq (il parse di ogni riga e l'invio è gestito da più thread)
+            parser_result_t res_file;
+            // Parse and send file requests sequentially, applying each line's delay.
+            res_file=parse_and_send(argv[2], mq);
             
-            if(res_file.error==SCALL_ERROR){//controllo che non ci siano stato errori durante il parsing e l'invio 
+            if(res_file.error==SCALL_ERROR){
 
                 EQ_ERROR(mq_close(mq),"errore nella chiusura della mq");
                 perror("errore nel parsing del file");
@@ -37,30 +36,31 @@ int main(int argc, char* argv[]){
 
             }
             
-        }else if(argc == 5){//CASO IN CUI HO SOLO UN FILE
+        }else if(argc == 5){
+            // Submit one request from command-line arguments.
             
             char buffer[BUFFERSIZE];
-            emergency_request_t emergenza;//dichiaro l'emergenza e poi assegno i tipi letti da argv
-            strcpy(emergenza.emergency_name, argv[1]);
-            emergenza.x=atoi(argv[2]);
-            emergenza.y=atoi(argv[3]);
+            emergency_request_t emergency;
+            strcpy(emergency.emergency_name, argv[1]);
+            emergency.x=atoi(argv[2]);
+            emergency.y=atoi(argv[3]);
             int delay = atoi(argv[4]);
 
-            if(delay>=0){//controllo che il delay sia positivo
+            // Command-line mode treats negative delays as zero.
+            if(delay>=0){
                 sleep(delay);
             }else{
-                sleep(0);//se non lo è lo interpreto come sleep(0)
+                sleep(0);
             }
 
-            emergenza.timestamp=time(NULL);
+            emergency.timestamp=time(NULL);
             
-            EQ_ERROR(mq_send(mq, (char*)(&emergenza), sizeof(emergenza), 0), "errore nell'invio del messaggio");
+            EQ_ERROR(mq_send(mq, (char*)(&emergency), sizeof(emergency), 0), "errore nell'invio del messaggio");
 
-            snprintf(buffer, BUFFERSIZE, "%s %d %d %d", emergenza.emergency_name, emergenza.x, emergenza.y, delay);
+            snprintf(buffer, BUFFERSIZE, "%s %d %d %d", emergency.emergency_name, emergency.x, emergency.y, delay);
             write_log(time(NULL), 0, CLIENT_REQUEST, buffer);
-            printf("messaggio inviato con successo\n");
-        
-            
+            printf("Request sent successfully\n");
+
         }else if(strcmp(argv[1], "shutdown_server")==STRCMP_TRUE){
 
             emergency_request_t sd_request;
@@ -69,14 +69,15 @@ int main(int argc, char* argv[]){
             sd_request.x=-1;
             sd_request.x=-1;
 
+            // Send one higher-priority shutdown message per server handler.
             for(size_t i=0;i<NUM_THREAD_SERVER;i++){
                 EQ_ERROR(mq_send(mq, (char*)(&sd_request), sizeof(sd_request), 3), "errore nell'invio della richiesta di shutdown");
             }
 
             write_log(time(NULL), 0, CLIENT_REQUEST, "shutdown_server richiesto da client");
 
-        }else{//CASO IN CUI NON HO -f E NEANCHE GLI ELEMENTI GIUSTI
-            printf("riga non valida passata!\n");
+        }else{
+            printf("Invalid command-line arguments\n");
             write_log(time(NULL), 0, INVALID_INPUT, "input non valido dato da riga di comando");
         }
     
@@ -84,7 +85,7 @@ int main(int argc, char* argv[]){
     write_log(time(NULL), 0, MESSAGE_QUEUE, "mq lato client chiusa");
 
     }else{
-        fprintf(stderr,"non sono stati passati argomenti");
+        fprintf(stderr,"No arguments provided");
     }
 
     return 0;

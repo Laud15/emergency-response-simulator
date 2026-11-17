@@ -9,204 +9,202 @@
 #define NOT_ALL_RESCUERS 0
 #define ALL_RESCUERS 1
 
-int pri2_cnt=0;//contatore che tiene traccia del numero di emergenze con priorità 2 in pausa
-int pri1_cnt=0;//contatore che tiene traccia del numero di emergenze con priorità 1 in pausa
+// Waiting-emergency counters are accessed under mtx_call_rescuers.
+int pri2_cnt=0;
+int pri1_cnt=0;
 
-int conta_rescuer(emergency_type_t lista){//funzione che calcola il numero totale di soccorritori necessari per gestire l'emergenza
+int count_required_rescuers(emergency_type_t emergency_type){
     int cnt=0;
 
-    for(size_t i=0; i<lista.rescuers_req_number;i++){
-        printf("richiesti %d di %s\n", lista.rescuers[i].required_count, lista.rescuers[i].type->rescuer_type_name);
-        cnt+=lista.rescuers[i].required_count;
+    for(size_t i=0; i<emergency_type.rescuers_req_number;i++){
+        printf("Required: %d %s responders\n", emergency_type.rescuers[i].required_count, emergency_type.rescuers[i].type->rescuer_type_name);
+        cnt+=emergency_type.rescuers[i].required_count;
     }
 
     return cnt;
 }
 
-int tempo_sufficiente(emergency_type_t emergenza, int x_dest, int y_dest, struct timespec deadline, struct timespec start){//funzion che calcola e controlla se il tempo necessario per avere tutti i soccorritori sul luogo dell'emergenza è minore uguale a quello settato dalla priorità, ritorna 1 se c'è abbastanza tempo 0 altrimenti
+// Check the slowest base-to-scene travel estimate against the remaining deadline.
+int can_arrive_before_deadline(emergency_type_t emergency, int x_dest, int y_dest, struct timespec deadline, struct timespec start){
 
-    printf("\nsto calcolando il tempo sufficiente di %s <x:%d, y:%d>\n", emergenza.emergency_desc, x_dest, y_dest);
+    printf("\nChecking arrival time for %s <x:%d, y:%d>\n", emergency.emergency_desc, x_dest, y_dest);
     int max=0;
     int travel_time;
     struct timespec now;
-    timespec_get(&now, TIME_UTC);//prendo il tempo di quando è stata chiamata tempo_sufficiente
-    int sec = (int)(now.tv_sec-start.tv_sec);//calcolo quanto tempo è passato da quando ho chiamato iniziato la risoluzione 
+    timespec_get(&now, TIME_UTC);
+    // Elapsed seconds since the client-side request timestamp.
+    int sec = (int)(now.tv_sec-start.tv_sec);
 
-    printf("\ntempo trascorso dall'inizio di %s <x:%d, y:%d>:%d\n",emergenza.emergency_desc, x_dest, y_dest, sec);
+    printf("\nElapsed time for %s <x:%d, y:%d>: %d seconds\n",emergency.emergency_desc, x_dest, y_dest, sec);
 
-    if(emergenza.priority>0){//se la priorità è 0 non ho limiti di tempo
-        if(sec>=(deadline.tv_sec-start.tv_sec)){//se è passato più tempo del timer mi fermo e ritorno 0
+    // Priority 0 bypasses arrival deadlines.
+    if(emergency.priority>0){
+        if(sec>=(deadline.tv_sec-start.tv_sec)){
             return TIME_OUT;
         }
 
-        for(size_t i=0; i<emergenza.rescuers_req_number;i++){//mi scorro tutti i tipi di soccorritori richiesti dall'emergenza
+        for(size_t i=0; i<emergency.rescuers_req_number;i++){
 
-            travel_time=TRAVEL_TIME(emergenza.rescuers[i].type->speed, emergenza.rescuers[i].type->x, emergenza.rescuers[i].type->y, x_dest, y_dest);//calcolo tempo di di arrivo
+            travel_time=TRAVEL_TIME(emergency.rescuers[i].type->speed, emergency.rescuers[i].type->x, emergency.rescuers[i].type->y, x_dest, y_dest);
 
-            if(travel_time>max){//prendo il massimo
+            if(travel_time>max){
                 max=travel_time;
-                //printf("tempo massimo stimato per %s = %d\n", emergenza.emergency_desc, max);
             }
         }
 
-        if(max>(deadline.tv_sec-now.tv_sec)){//se il tempo di arrivo è maggiore del tempo che mi rimane mi fermo
-            printf("tempo massimo di arrivo a %s <x:%d, y:%d>:%d è maggiore del tempo rimanente\n",emergenza.emergency_desc, x_dest, y_dest, max);
+        if(max>(deadline.tv_sec-now.tv_sec)){
+            printf("Maximum arrival time for %s <x:%d, y:%d>: %d seconds exceeds the remaining time\n",emergency.emergency_desc, x_dest, y_dest, max);
             return TIME_OUT;
         }
-        printf("il tempo di arrivo a %s  <x:%d,y:%d> è %d, ok!\n\n", emergenza.emergency_desc, x_dest, y_dest, max);//se invece il tempo è sufficiente posso continuare
+        printf("Arrival time for %s <x:%d,y:%d>: %d seconds is within the deadline\n\n", emergency.emergency_desc, x_dest, y_dest, max);
         return IN_TIME;
     }
 
-    printf("il tempo di arrivo a %s  <x:%d,y:%d> è ok\n", emergenza.emergency_desc, x_dest, y_dest);//questo è il caso in cui ho priorità 0
+    printf("No arrival deadline for %s <x:%d,y:%d>\n", emergency.emergency_desc, x_dest, y_dest);
     return IN_TIME;
     
 }
 
-
-
 int rescuer_thread(void* arg){
 
-    data_rescuer_thread* resc_data = (data_rescuer_thread*) arg;//faccio il cast a data_rescuer_thread di arg
+    rescuer_thread_data_t* resc_data = (rescuer_thread_data_t*) arg;
     int travel_time=TRAVEL_TIME(resc_data->twin->rescuer->speed, resc_data->twin->rescuer->x,resc_data->twin->rescuer->y, resc_data->dest_x, resc_data->dest_y);
-    int expected=0;//valore che mi aspetto quando non ci sono più soccorritori sul luogo dell'emergenza
-    int desired=1;//valore che voglio avere quando non ci sono più soccorritori sul luogo dell'emergenza
-    char buffer[BUFFERSIZE]; //buffer usato per la scrittura nel log
+    int expected=0;
+    int desired=1;
+    char buffer[BUFFERSIZE];
 
-    resc_data->twin->status=EN_ROUTE_TO_SCENE;//setto il soccorritore nello stato EN_ROUTE
-    snprintf(buffer, BUFFERSIZE, "rescuer id: %d %s messo in stato EN_ROUTE_TO_SCENE", resc_data->twin->id ,resc_data->twin->rescuer->rescuer_type_name);
+    resc_data->twin->status=EN_ROUTE_TO_SCENE;
+    snprintf(buffer, BUFFERSIZE, "Rescuer id: %d %s set to EN_ROUTE_TO_SCENE", resc_data->twin->id ,resc_data->twin->rescuer->rescuer_type_name);
     write_log(time(NULL), resc_data->id, RESCUER_ASSIGNMENT, buffer);
 
-    sleep(travel_time);//aspetto per il tempo di arrivo
+    sleep(travel_time);
 
-    resc_data->twin->status=ON_SCENE;//dopo aver atteso l'arrivo mi metto on-scene
-    snprintf(buffer, BUFFERSIZE, "rescuer id: %d %s messo in stato ON_SCENE", resc_data->twin->id ,resc_data->twin->rescuer->rescuer_type_name);
+    resc_data->twin->status=ON_SCENE;
+    snprintf(buffer, BUFFERSIZE, "Rescuer id: %d %s set to ON_SCENE", resc_data->twin->id ,resc_data->twin->rescuer->rescuer_type_name);
     write_log(time(NULL), resc_data->id, RESCUER_STATUS, buffer);
     
-    barrier_em_status(resc_data->stato_emergenza, resc_data->count, (int)(*resc_data->n_twin), resc_data->mtx_barrier, resc_data->cnd_barrier, resc_data->id);//aspetto che arrivino tutti, nel momento in cui arrivano l'ultimo setto lo stato a IN_PROGRESS
+    // Synchronize arrivals before starting on-site work.
+    barrier_em_status(resc_data->emergency_status, resc_data->count, (int)(*resc_data->n_twin), resc_data->mtx_barrier, resc_data->cnd_barrier, resc_data->id);
 
-    sleep(resc_data->time_manage);//mi fermo per il tempo richiesto
-    printf("sono %d %s e ho finito il mio lavoro\n", resc_data->twin->id,resc_data->twin->rescuer->rescuer_type_name);
+    sleep(resc_data->time_manage);
+    printf("Rescuer %d %s finished on-site work\n", resc_data->twin->id,resc_data->twin->rescuer->rescuer_type_name);
 
-    //DECREMENTO IL NUMERO DI SOCCORRITORI ANCORA SUL CAMPO
-    atomic_fetch_sub(resc_data->n_twin, 1);//quando ho finite diminuisco il numero di gemelli
-    if(atomic_compare_exchange_strong(resc_data->n_twin,&expected, desired)){//se non c'è più nessuno l'emergenza è stata risolta
-        printf("\n--emergenza a <x:%d, y:%d> risolta--\n\n", resc_data->dest_x, resc_data->dest_y);
-        (*(resc_data->stato_emergenza))=COMPLETED;
+    // Only the thread that changes the counter from zero to one records completion.
+    atomic_fetch_sub(resc_data->n_twin, 1);
+    if(atomic_compare_exchange_strong(resc_data->n_twin,&expected, desired)){
+        printf("\n--Emergency at <x:%d, y:%d> completed--\n\n", resc_data->dest_x, resc_data->dest_y);
+        (*(resc_data->emergency_status))=COMPLETED;
         write_log(time(NULL), resc_data->id, EMERGENCY_STATUS, "emergenza COMPLETED");
     }
     
-    resc_data->twin->status=RETURNING_TO_BASE;//cambio il mio stato
-    snprintf(buffer, BUFFERSIZE, "rescuer id: %d %s messo in RETURNING TO BASE", resc_data->twin->id ,resc_data->twin->rescuer->rescuer_type_name);
+    resc_data->twin->status=RETURNING_TO_BASE;
+    snprintf(buffer, BUFFERSIZE, "Rescuer id: %d %s set to RETURNING TO BASE", resc_data->twin->id ,resc_data->twin->rescuer->rescuer_type_name);
     write_log(time(NULL), resc_data->id, RESCUER_STATUS, buffer);
 
-    sleep(travel_time);//faccio passare il tempo per tornare alla base
-    resc_data->twin->status=IDLE;//mi rimetto in idle
+    sleep(travel_time);
+    resc_data->twin->status=IDLE;
 
-    snprintf(buffer, BUFFERSIZE, "rescuer id: %d %s tornato alla base, messo in IDLE", resc_data->twin->id ,resc_data->twin->rescuer->rescuer_type_name);
+    snprintf(buffer, BUFFERSIZE, "Rescuer id: %d %s returned to base, set to IDLE", resc_data->twin->id ,resc_data->twin->rescuer->rescuer_type_name);
     write_log(time(NULL), resc_data->id, RESCUER_STATUS, buffer);
 
-    //PARTE RISVEGLIO DELLE EMERGENZE MESSE IN PAUSA
-    THRD_CHECK(mtx_lock(&mtx_call_rescuers), "errore nella lock di mtx_call_rescuer");//uso lo stesso lock della call perchè sto accedendo (e modificando) la lista condivisa tra tutti i thread
+    // Restore availability under the allocation lock, then wake the highest waiting priority.
+    THRD_CHECK(mtx_lock(&mtx_call_rescuers), "errore nella lock di mtx_call_rescuer");
 
-    //effettuo l'incremento dei gemelli disponibili
-    for(size_t i=0; i<len_lst_rescuers;i++){
-        if(strcmp(resc_data->twin->rescuer->rescuer_type_name, lista_rescuers[i].lst_gemelli[0].rescuer->rescuer_type_name)==STRCMP_TRUE){
-            lista_rescuers[i].dt_idle++;
+    for(size_t i=0; i<rescuer_pool_count;i++){
+        if(strcmp(resc_data->twin->rescuer->rescuer_type_name, rescuer_pools[i].instances[0].rescuer->rescuer_type_name)==STRCMP_TRUE){
+            rescuer_pools[i].idle_count++;
             break;
         }
     }
 
-    if(pri2_cnt>0){//se ci sono emergenze con priorità 2 risveglio quelle
-        printf("sveglio quelli con priorità 2\n");
+    if(pri2_cnt>0){
+        printf("Waking priority-2 requests\n");
         THRD_CHECK(cnd_broadcast(&new_idle_pri2), "errore nella broadcast di new_idle");
 
-    }else if(pri1_cnt>0){//se non ci sono emergenze di priorità 2 ma ci sono di priorità 1
-        printf("sveglio quelli con priorità 1\n");
+    }else if(pri1_cnt>0){
+        printf("Waking priority-1 requests\n");
         THRD_CHECK(cnd_broadcast(&new_idle_pri1), "errore nella broadcast di new_idle");
         
-    }else{//se ci sono solo priorità 0
-        printf("sveglio quelli con priorità 0\n");
+    }else{
+        printf("Waking priority-0 requests\n");
         THRD_CHECK(cnd_broadcast(&new_idle_pri0), "errore nella broadcast di new_idle");
     }
 
     THRD_CHECK(mtx_unlock(&mtx_call_rescuers), "errore nella unlock di mtx_call_rescuer");
-    //FINE PARTE RISVEGLIO DELLE EMERGENZE MESSE IN PAUSA
 
-    free(resc_data);//libero la memoria allocata per il dato
+    free(resc_data);
     return thrd_success;
 }
 
-
-int solve(emergency_t* emergenza, int id){//funzio che presa un emergenza chiama n thread soccorritori, assegna loro i parametri e una funzione che simulerà il comportamento del soccorritore, li aspetta e ritorna
+// Launch one thread per assigned responder and join them after return to base.
+int solve(emergency_t* emergency, int id){
     
-    thrd_t rescuers[emergenza->rescuer_count];//creo l'array che conterra i thread, di lunghezza pari al numero di gemelli richiesti
-    atomic_int n_twin=(atomic_int)emergenza->rescuer_count;//creo una variabile atomica che conterrà il numero gemelli
-    mtx_t mtx_barrier;//creo la mia copia della mutex per la barriera
-    cnd_t cnd_barrier;//creo la mia copia della cond_var per la barrier
-    int count_barrier=0;//dichiaro un contatore che utilizzerò poi nella barrier
+    thrd_t rescuers[emergency->rescuer_count];
+    atomic_int n_twin=(atomic_int)emergency->rescuer_count;
+    // Each emergency owns its arrival barrier and shares it among its responders.
+    mtx_t mtx_barrier;
+    cnd_t cnd_barrier;
+    int count_barrier=0;
 
     THRD_CHECK(mtx_init(&mtx_barrier, mtx_plain), "errore nella init di mtx_barrier");
     THRD_CHECK(cnd_init(&cnd_barrier), "errore nella init di cnd_barrier");
     
-    //PARTE CREAZIONE DEI THRD-SOCCORRITORI
-    for(size_t i=0; i<emergenza->rescuer_count;i++){//calcolo il tempo di arrivo
+    for(size_t i=0; i<emergency->rescuer_count;i++){
 
-        data_rescuer_thread* data;//creo il dato che poi passerò come argomento al thread
-        SNCALL(data, malloc(sizeof(data_rescuer_thread)), "errore nell'allocazione di memoria per i thread soccorritori");//alloco e controllo
+        rescuer_thread_data_t* data;
+        SNCALL(data, malloc(sizeof(rescuer_thread_data_t)), "errore nell'allocazione di memoria per i thread soccorritori");
 
         data->id=id;
-        data->twin=emergenza->rescuers_dt[i];//assegno il gemello che dovra partire, risolvere e tornare
-        data->dest_x=emergenza->x;//passo la x della destinazione 
-        data->dest_y=emergenza->y;//passo la y della destinazione
-        data->n_twin=&n_twin;//passo il numero di gemelli che saranno presenti
-        data->stato_emergenza=&(emergenza->status);//passo il puntatore allo stato dell'emergenza
-        data->cnd_barrier=&cnd_barrier;//passo la cnd della barrier
-        data->mtx_barrier=&mtx_barrier;//passo il mtx della barrier
-        data->count=&count_barrier;//passo il counter della barrier
+        data->twin=emergency->rescuers_dt[i];
+        data->dest_x=emergency->x;
+        data->dest_y=emergency->y;
+        data->n_twin=&n_twin;
+        data->emergency_status=&(emergency->status);
+        data->cnd_barrier=&cnd_barrier;
+        data->mtx_barrier=&mtx_barrier;
+        data->count=&count_barrier;
        
-        for(size_t j=0; j<emergenza->type.rescuers_req_number;j++){
-            if(strcmp(data->twin->rescuer->rescuer_type_name, emergenza->type.rescuers[j].type->rescuer_type_name)==STRCMP_TRUE){//cotrollo per quanto tempo il soccorritore deve rimanere sul luogo dell'emergenza
-                data->time_manage=emergenza->type.rescuers[j].time_to_manage;
+        for(size_t j=0; j<emergency->type.rescuers_req_number;j++){
+            if(strcmp(data->twin->rescuer->rescuer_type_name, emergency->type.rescuers[j].type->rescuer_type_name)==STRCMP_TRUE){
+                data->time_manage=emergency->type.rescuers[j].time_to_manage;
             }
         }
-        THRD_CHECK(thrd_create(&rescuers[i], rescuer_thread, data), "errore nella create dei rescuer thread");//creo il thread
+        THRD_CHECK(thrd_create(&rescuers[i], rescuer_thread, data), "errore nella create dei rescuer thread");
     }
-    //FINE PARTE CREAZIONE DEI THRD-SOCCORRITORI
 
-    for(size_t i=0; i<emergenza->rescuer_count;i++){
-        THRD_CHECK(thrd_join(rescuers[i], NULL), "errore nella join dei rescuer_thread");//attendo il ritorno del thread
+    for(size_t i=0; i<emergency->rescuer_count;i++){
+        THRD_CHECK(thrd_join(rescuers[i], NULL), "errore nella join dei rescuer_thread");
     }
     
-    mtx_destroy(&mtx_barrier);//distruggo il mutex
-    cnd_destroy(&cnd_barrier);//distruggo la cond_var
+    mtx_destroy(&mtx_barrier);
+    cnd_destroy(&cnd_barrier);
     return 0;
 }
 
+int call_rescuers(emergency_t* emergency){
 
-int call_rescuers(emergency_t* emergenza){
+    int current_position=0;
+    // Check every requested type before reserving any responders.
+    for(size_t i=0;i<emergency->type.rescuers_req_number;i++){
+        for(size_t j=0;j<rescuer_pool_count;j++){
 
-    int current_position=0;//utilizzo una variabile di supporto per tener traccia di dove mi sono fermato nel popolamento della lista dei dt dell'emergenza
-    //CONTROLLO CHE CI SIANO ABBASTANZA GEMELLI LIBERI PER SODDISFARE LA MIA RICHIESTA
-    for(size_t i=0;i<emergenza->type.rescuers_req_number;i++){
-        for(size_t j=0;j<len_lst_rescuers;j++){
-
-            if(strcmp(emergenza->type.rescuers[i].type->rescuer_type_name, lista_rescuers[j].lst_gemelli[0].rescuer->rescuer_type_name)==STRCMP_TRUE){//controllo che il tipo corrisponda
-                if(emergenza->type.rescuers[i].required_count>lista_rescuers[j].dt_idle){//se ci sono più dt di quel tipo richiesti di quelli disponibili ritorno il valore per il quale mi sospendo
+            if(strcmp(emergency->type.rescuers[i].type->rescuer_type_name, rescuer_pools[j].instances[0].rescuer->rescuer_type_name)==STRCMP_TRUE){
+                if(emergency->type.rescuers[i].required_count>rescuer_pools[j].idle_count){
                     return NOT_ALL_RESCUERS;
                 }
             }
         }
     }
-    //SE CI SONO METTO I GEMELLI LIBERI NELLA LISTA
-    for(size_t i=0; i<emergenza->type.rescuers_req_number;i++){
-        for(size_t j=0;j<len_lst_rescuers;j++){
+    // Allocate backwards from each pool's idle-count boundary; states are not checked.
+    for(size_t i=0; i<emergency->type.rescuers_req_number;i++){
+        for(size_t j=0;j<rescuer_pool_count;j++){
 
-            if(strcmp(emergenza->type.rescuers[i].type->rescuer_type_name, lista_rescuers[j].lst_gemelli[0].rescuer->rescuer_type_name)==STRCMP_TRUE){
+            if(strcmp(emergency->type.rescuers[i].type->rescuer_type_name, rescuer_pools[j].instances[0].rescuer->rescuer_type_name)==STRCMP_TRUE){
 
-                for(size_t k=0; k<emergenza->type.rescuers[i].required_count;k++){
-                    emergenza->rescuers_dt[current_position]=&(lista_rescuers[j].lst_gemelli[(lista_rescuers[j].dt_idle-1)]);//inizio a prendere i gemelli dall fondo della lista (avrò quindi come prime scelte quelli con gli id maggiori)
-                    printf("ho inserito <id:%d tipo:%s> nella posizione %d\n", lista_rescuers[j].lst_gemelli[(lista_rescuers[j].dt_idle-1)].id, lista_rescuers[j].lst_gemelli[(lista_rescuers[j].dt_idle-1)].rescuer->rescuer_type_name, current_position);
-                    lista_rescuers[j].dt_idle--;
+                for(size_t k=0; k<emergency->type.rescuers[i].required_count;k++){
+                    emergency->rescuers_dt[current_position]=&(rescuer_pools[j].instances[(rescuer_pools[j].idle_count-1)]);
+                    printf("Assigned <id:%d type:%s> to slot %d\n", rescuer_pools[j].instances[(rescuer_pools[j].idle_count-1)].id, rescuer_pools[j].instances[(rescuer_pools[j].idle_count-1)].rescuer->rescuer_type_name, current_position);
+                    rescuer_pools[j].idle_count--;
                     current_position++;
                 }
             }
@@ -215,169 +213,171 @@ int call_rescuers(emergency_t* emergenza){
     return ALL_RESCUERS;
 }
 
+// Reserve all required responders, waiting for availability, then run the simulation.
+int try_solve(emergency_t* emergency, int id){
 
-int try_solve(emergency_t* emergenza, int id){//funzione che preso in input un'emergenza, una lista contenete tutti i gemelli disponibili e la suea lunghezza prova ad asseggnare tutti i gemelli richiesti dall'emergenza, se si riesce chiama solve, non ci riesce si mette in attesa di qualche nuovo soccorritore in idle
+    printf("Attempting to handle %s\n", emergency->type.emergency_desc);
 
-    printf("sto provando a risolvere %s\n", emergenza->type.emergency_desc);
-
-    struct timespec deadline;//conterrà i secondi entro cui dovrò avere tutti i soccorritori sul luogo
-    struct timespec start;//indica il tempo attuale al momento della chiamata di try_solve
+    struct timespec deadline;
+    struct timespec start;
     int cnd_res;
 
-    //---PARTE DI CONTROLLO DELLE TEMPISTICHE---
+    // Compute wait deadlines from the current time; start holds the request timestamp.
     start.tv_nsec=0;
-    start.tv_sec=emergenza->time;
+    start.tv_sec=emergency->time;
     timespec_get(&deadline, TIME_UTC);
 
-    switch (emergenza->type.priority){
+    switch (emergency->type.priority){
 
-        case PRI_0://se sono a 0 non ho bisogno di tener traccia del tempo
+        case PRI_0:
             break;
-        case PRI_1://se ho 1 assegno 30 secondi 
+        case PRI_1:
             deadline.tv_nsec=0;
             deadline.tv_sec+=TIME_PRI1;
             break;
-        case PRI_2://se ho 2 assegno 10 secondi
+        case PRI_2:
             deadline.tv_nsec=0;
             deadline.tv_sec+=TIME_PRI2;
             break;
-        default://non si verifica mai
-        fprintf(stderr, "priorità non riconosciuta");
+        default:
+        fprintf(stderr, "Unknown priority");
         return thrd_error;
 
     }
     
-    if(emergenza->type.priority>0){//se la priorità prevede un timer calcolo se è possibile risolvere l'emergenza entro quel tempo
-        if(tempo_sufficiente(emergenza->type,emergenza->x, emergenza->y, deadline, start)==TIME_OUT){
+    // Reject requests whose estimated arrival exceeds the remaining deadline.
+    if(emergency->type.priority>0){
+        if(can_arrive_before_deadline(emergency->type,emergency->x, emergency->y, deadline, start)==TIME_OUT){
 
-            printf("\n--emergenza %s TIMEOUT--\n\n", emergenza->type.emergency_desc);
-            emergenza->status=TIMEOUT;
+            printf("\n--Emergency %s TIMEOUT--\n\n", emergency->type.emergency_desc);
+            emergency->status=TIMEOUT;
             write_log(time(NULL), id, TIMEOUT_FOR_DISTANCE, "TIMEOUT dell'emergenza");
             return thrd_success;
 
         }
     }
-    //---FINE PARTE CONTROLLO TEMPISTICHE---
 
-    //---INIZIO SEZIONE CRITICA---
-    THRD_CHECK(mtx_lock(&mtx_call_rescuers), "errore nella lock di mtx_call_rescuers");//visto che devo accedere ad una struttura condivista tra tutti i thread effettuo una lock per evitare race condition
+    // Serialize resource checks and reservations across emergency handlers.
+    THRD_CHECK(mtx_lock(&mtx_call_rescuers), "errore nella lock di mtx_call_rescuers");
     
-    while(call_rescuers(emergenza)==NOT_ALL_RESCUERS){
+    while(call_rescuers(emergency)==NOT_ALL_RESCUERS){
 
-        emergenza->status=PAUSED;
+        emergency->status=PAUSED;
         write_log(time(NULL), id, EMERGENCY_STATUS, "emergenza messa in PAUSE");
 
-        if(emergenza->type.priority>PRI_0){//se ho necessita del time uso una cnd_timedwait
+        if(emergency->type.priority>PRI_0){
 
-                if(emergenza->type.priority==PRI_2){
+                if(emergency->type.priority==PRI_2){
                     pri2_cnt++;
-                    printf("\n---non ci sono tutti i soccorritori di cui ho bisogno, mi metto in pausa, siamo %d con prio 2 in attesa---\n", pri2_cnt);
+                    printf("\n---Waiting for responders: %d priority-2 requests paused---\n", pri2_cnt);
                     cnd_res = cnd_timedwait(&new_idle_pri2, &mtx_call_rescuers, &deadline);
                 }else{
                     pri1_cnt++;
-                    printf("\n---non ci sono tutti i soccorritori di cui ho bisogno, mi metto in pausa, siamo %d con prio 1 in attesa---\n", pri1_cnt);
+                    printf("\n---Waiting for responders: %d priority-1 requests paused---\n", pri1_cnt);
                     cnd_res = cnd_timedwait(&new_idle_pri1, &mtx_call_rescuers, &deadline);
                 }
 
                 THRD_CHECK(cnd_res, "errore nella cnd_timedwait");
 
-                printf("\nsono %s <x:%d,y:%d> e ho saputo ci sono nuovi idle\n\n", emergenza->type.emergency_desc, emergenza->x, emergenza->y);
-                emergenza->status=WAITING;
+                printf("\n%s <x:%d,y:%d> notified of available responders\n\n", emergency->type.emergency_desc, emergency->x, emergency->y);
+                emergency->status=WAITING;
                 write_log(time(NULL), id, EMERGENCY_STATUS, "emergenza messa in WAITING");
 
-                if(emergenza->type.priority==PRI_2){
+                if(emergency->type.priority==PRI_2){
                     pri2_cnt--;
-                    printf("\n---sono rimasti %d di priorità 2 in attesa---\n", pri2_cnt);
+                    printf("\n---Priority-2 requests still waiting: %d---\n", pri2_cnt);
                 }else{
                     pri1_cnt--;
-                    printf("\n---sono rimasti %d di priorità 1 in attesa---\n", pri1_cnt);
+                    printf("\n---Priority-1 requests still waiting: %d---\n", pri1_cnt);
                 }
 
-                if(cnd_res == thrd_timedout || (tempo_sufficiente(emergenza->type,emergenza->x, emergenza->y, deadline, start)==TIME_OUT)){//una volta risvegliato se mi sono risvegliato per via del timer e se ho abbastanza tempo per eseguire l'emergenza provo a riacquisire i gemelli
+                // Stop if the wait expired or the remaining time no longer permits arrival.
+                if(cnd_res == thrd_timedout || (can_arrive_before_deadline(emergency->type,emergency->x, emergency->y, deadline, start)==TIME_OUT)){
 
-                    printf("\nsono %s <x:%d, y:%d> e ho aspettato per troppo tempo\n\n", emergenza->type.emergency_desc, emergenza->x, emergenza->y);
-                    emergenza->status=TIMEOUT;//se non lo sono mi segno come timeout e ritorno
+                    printf("\n%s <x:%d, y:%d> timed out while waiting\n\n", emergency->type.emergency_desc, emergency->x, emergency->y);
+                    emergency->status=TIMEOUT;
                     write_log(time(NULL), id, TIMEOUT_FOR_RESOURCE, "TIMEOUT dell'emergenza");
                     mtx_unlock(&mtx_call_rescuers);
 
                     return 0;
                 }
 
-            }else{//se invece ho priorità 0 non necessito del timer e usa una cnd normale
+            }else{
+                // Priority 0 waits for availability without a deadline.
                 THRD_CHECK(cnd_wait(&new_idle_pri0, &mtx_call_rescuers), "errore nella cnd_wait di new_idle");
-                printf("\nsono %s <x:%d,y:%d> e ho saputo ci sono nuovi idle\n\n", emergenza->type.emergency_desc, emergenza->x, emergenza->y);
-                emergenza->status=WAITING;
+                printf("\n%s <x:%d,y:%d> notified of available responders\n\n", emergency->type.emergency_desc, emergency->x, emergency->y);
+                emergency->status=WAITING;
                 write_log(time(NULL), id, EMERGENCY_STATUS, "emergenza messa in WAITING");
             }
     }
 
-    printf("\n--ho trovato tutti i soccorritori di cui ho bisogno!--\n\n");
-    for(size_t i=0;i<emergenza->rescuer_count;i++){
-        emergenza->rescuers_dt[i]->status=EN_ROUTE_TO_SCENE;//visto che ho tutti i soccorritori setto il loro stato in modo da non essere disponibili per le altre emergenze
+    printf("\n--All required responders are available--\n\n");
+    for(size_t i=0;i<emergency->rescuer_count;i++){
+        emergency->rescuers_dt[i]->status=EN_ROUTE_TO_SCENE;
     }
 
     THRD_CHECK(mtx_unlock(&mtx_call_rescuers), "errore nella unlock di mtx_call_rescuers");
-    //---FINE SEZIONE CRITICA---
 
-    emergenza->status=ASSIGNED;//visto che ho tutti i soccorritori di cui ho bisogno
+    emergency->status=ASSIGNED;
     write_log(time(NULL), id, EMERGENCY_STATUS, "Emergenza messa in ASSIGNED");
 
-    solve(emergenza, id);
+    solve(emergency, id);
 
     return 1;
 }
 
+// Build an emergency instance from a known type and valid grid coordinates.
+emergency_t create_emergency_instance(emergency_request_t emergency, int id){
 
-emergency_t elaborazione(emergency_request_t emergenza, int id){//funzione che "parsa" la struttura lettan nella mq e effetua i dovuti controlli
+    emergency_t emergency_instance;
+    int type_found=0;
+    emergency_instance.rescuers_dt=NULL;
 
-    emergency_t istanza_emergenza;//creo la struttura che conterrà il risultato dell'elaborazione
-    int trovato=0;
-    istanza_emergenza.rescuers_dt=NULL;
+    // Coordinates are one-based and bounded by the configured grid.
+    if(POS_AND_MIN(emergency.x, environment.width) && POS_AND_MIN(emergency.y, environment.height)){
 
-    if(POS_AND_MIN(emergenza.x, ambiente.width) && POS_AND_MIN(emergenza.y, ambiente.height)){//controllo che le coordinate siano corrette
+            for(size_t i=0;i<emergency_type_count;i++){
 
-            for(size_t i=0;i<len_lst_emergency_t;i++){
+                if(strcmp(emergency.emergency_name, emergency_types[i].emergency_desc)==STRCMP_TRUE){
 
-                if(strcmp(emergenza.emergency_name, lista_emergency_type[i].emergency_desc)==STRCMP_TRUE){//cerco l'emergenza richiesta (sono sicuro che esista perchè senno mi sarei fermato all'if precedente)
-
-                    istanza_emergenza.type=lista_emergency_type[i];//assegno il tipo
-                    istanza_emergenza.status=WAITING;//assegno lo stato in attesa
-                    istanza_emergenza.x=emergenza.x;//assegno la coordinata x
-                    istanza_emergenza.y=emergenza.y;//assegno la coordinata y
-                    istanza_emergenza.time=emergenza.timestamp;//assegno il tempo in cui l'emergenza è accaduta
-                    istanza_emergenza.rescuer_count=conta_rescuer(lista_emergency_type[i]);//assegno il numero dei rescuer di cui ho bisogno per terminare
-                    SNCALL(istanza_emergenza.rescuers_dt, malloc(sizeof(rescuer_digital_twin_t*)*istanza_emergenza.rescuer_count), "errore nell'allocazione di memoria del campo rescuers_dt");//creo la lista che conterrà i puntatori ai gemelli
+                    emergency_instance.type=emergency_types[i];
+                    emergency_instance.status=WAITING;
+                    emergency_instance.x=emergency.x;
+                    emergency_instance.y=emergency.y;
+                    emergency_instance.time=emergency.timestamp;
+                    emergency_instance.rescuer_count=count_required_rescuers(emergency_types[i]);
+                    SNCALL(emergency_instance.rescuers_dt, malloc(sizeof(rescuer_digital_twin_t*)*emergency_instance.rescuer_count), "errore nell'allocazione di memoria del campo rescuers_dt");
 
                     write_log(time(NULL), id, MESSAGE_QUEUE, "richiesta elaborata correttamente");
                     write_log(time(NULL), id, EMERGENCY_STATUS, "emergenza messa in stato di WAIT");
-                    trovato=1;
+                    type_found=1;
                     break;
                 }
             }
 
-            if(!trovato){//Gestisco il caso in cui sia stata mandata un'emergenza non registrata nel file di configurazione
+            // Cancel requests with an unknown emergency name.
+            if(!type_found){
                 write_log(time(NULL), id, MESSAGE_QUEUE, "richiesta emergenza non esistente");
-                istanza_emergenza.status=CANCELED;
+                emergency_instance.status=CANCELED;
                 write_log(time(NULL), id, EMERGENCY_STATUS, "richiesta CANCELED");
-                return istanza_emergenza;
+                return emergency_instance;
             }
 
-        return istanza_emergenza;
+        return emergency_instance;
 
-    }else{//gestisco il caso di coordinate non valide
-        istanza_emergenza.status=CANCELED;
+    }else{
+        emergency_instance.status=CANCELED;
         write_log(time(NULL), id, MESSAGE_QUEUE, "coordinate errate inserite");
         write_log(time(NULL), id, EMERGENCY_STATUS, "richiesta CANCELED");
-        return istanza_emergenza;
+        return emergency_instance;
     }
 }
 
-
 int handler_emergency(void* arg){
 
-    char buffer[BUFFERSIZE];//buffer che si utilizza per la snprintf 
-    int* id = (int*) arg;//faccio il cast del tipo
-    emergency_request_t req;//creo la struttura che accoglierà il messaggio letto dalla mq
+    char buffer[BUFFERSIZE];
+    int* id = (int*) arg;
+    emergency_request_t req;
     
     if(mq_receive(mq, (char*)&req, sizeof(emergency_request_t), NULL) == SCALL_ERROR){
         write_log(time(NULL), *id, MESSAGE_QUEUE, "errore nella lettura della mq");
@@ -386,29 +386,28 @@ int handler_emergency(void* arg){
         return thrd_error;
     }
 
-    if(strcmp(req.emergency_name,"shutdown_server")==STRCMP_TRUE){//controllo se è stata fatta una richiesta di shutdown
+    // Stop this handler; the server still joins all other handlers in the batch.
+    if(strcmp(req.emergency_name,"shutdown_server")==STRCMP_TRUE){
         write_log(time(NULL), *id, SHUTDOWN, "richiesta di shutdown server");
         free(id);
         atomic_store(&go, 0);
         return thrd_success;
     }
     
-    snprintf(buffer, BUFFERSIZE, "letto dalla mq emergenza:%s a <x:%d,y:%d>", req.emergency_name, req.x, req.y);
+    snprintf(buffer, BUFFERSIZE, "Received emergency: %s at <x:%d,y:%d>", req.emergency_name, req.x, req.y);
     write_log(time(NULL), *id, MESSAGE_QUEUE, buffer);
 
-    emergency_t emergenza = elaborazione(req, *id);//assegno a emergenza il risultato di elaborazione
+    emergency_t emergency = create_emergency_instance(req, *id);
     
-    if(emergenza.status!=CANCELED){//se elaborazione non ha trovato errori provo a risolvere l'emergenza
-        printf("sono thrd %d e ho elaborato %s di priorità %hd a <x:%d, y:%d>\n", *id, emergenza.type.emergency_desc,emergenza.type.priority, emergenza.x, emergenza.y);
-        try_solve(&emergenza, *id);
+    if(emergency.status!=CANCELED){
+        printf("Handler %d processing %s with priority %hd at <x:%d, y:%d>\n", *id, emergency.type.emergency_desc,emergency.type.priority, emergency.x, emergency.y);
+        try_solve(&emergency, *id);
     }else{
-        printf("sono thrd %d , emergenza non valida\n", *id);
+        printf("Handler %d received an invalid emergency\n", *id);
     }
 
-    free(emergenza.rescuers_dt);
+    free(emergency.rescuers_dt);
     free(id);
     return thrd_success;
 }
-
-
 

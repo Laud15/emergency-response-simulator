@@ -4,6 +4,6 @@
 #include "macro.h"
 #include "strutture.h"
 
-res_parser parse_env(env*);
+parser_result_t parse_env(environment_t*);
 
 #endif 

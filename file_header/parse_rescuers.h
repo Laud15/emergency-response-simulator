@@ -4,6 +4,6 @@
 #include "strutture.h"
 #include "macro.h"
 
-res_parser parse_rescuers(coppie_numero_gemelli**);
+parser_result_t parse_rescuers(rescuer_pool_t**);
 
 #endif

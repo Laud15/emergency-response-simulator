@@ -27,57 +27,40 @@
 #define PRI_2 2
 #define STRCMP_TRUE 0
 
-extern int id_operazione;
+extern int operation_id;
 
 #define PATH_LOG "log_file.log"
 #define PATH_RESCUERS "file_conf/rescuers.conf"
 #define PATH_EMERGENCY_TYPES "file_conf/emergency_types.conf"
 #define PATH_ENV "file_conf/env.conf"
 
-//-----------MACRO PRESE DALLE LEZIONI--------------------------------------------------------//
+// Error-checking helpers adapted from course material.
 
 #define SCALL(r, c, e) do { if((r = (c)) == SCALL_ERROR) { perror(e); exit(EXIT_FAILURE); } } while(0) 
 #define SNCALL(r, c, e) do { if((r = (c)) == NULL) { perror(e); exit(EXIT_FAILURE); } } while(0) 
 
-//--------------------MACRO FATTE DA ME------------------------------------------------------//
+// Project-specific parser, cleanup and timing helpers.
 
-
-//FREE_ALL_RESCUE:prende come argoment serve a liberare prima il nome del rescuer, poi la locazione di memoria adibita per la struttra del rescuer, poi libera la lista dei gemelli e infine libera la lista contenente le coppie numero_gemello, setta anche tutto a null
-//FREE_ALL_EMERGENCY: libera e setta a null una lista passata come argomento di tipo lista_emergency** e la lista libera la memoria. Si presuppone che si usi prima la free resucers e per questo non si vanno a fare free ai rescuer puntati
-//NCALL_PARSER: la si usa per qualsiasis chiamata (di sistema e non) che ritorni null in caso di errore all'interno del parser (solo dopo aver aperto il file) setta il campo error del tipo di ritorno del parse a -1
-//ABS:calcola il valore assoluto di un numero 
-//DISTANZA:calcola la distanza, mettendo in valore assoluto i due operando della somma
-//TRAVEL_TIME:effettua distanza/velocità
-//POS_AND_MIN:controlla che una valore sia positivo e minore di un altro valore
-//EQ_ERROR:simile a scall con la differenza che non necessita una variabile dove inserire il risultato
-//EQN_ERROR:come EQ_ERROR ma con null
-//CHECK_FCLOSE:controlla la chisura del file è andata a buon fine, prende come argomento il tipo di ritorno dei parse e setta l'errore poi ritorna
-//CHECK_END_FGETS:controlla che si sia arrivati effettivamente a fine file con la fgets
-//CHECK_SSCANF:controlla che i caratteri letti dalla sscanf corrispando ad un intero, come per le altre funzioni dei parse prende anche il res del parser e vi setta l'errore prima di ritornare
-//CHECK_CREATE:Controlla che la creazione di un thread vada a buon fine
-//CHECK_JOIN:Controlla che la join di un thread vada a buon fine
-
-
-
-//MACRO PARSER-EXCLUSIVE (utilizzabili solo in presenza di una struttura res_parser e da affiancare poi ad una reale terminazione)
+// Parser checks report failure through parser_result_t and may return early.
 
 #define CHECK_FCLOSE(fd,res,e) do{ if((fclose(fd)) == EOF) { perror(e); res.error=SCALL_ERROR; return res; } } while(0)
 #define NCALL_PARSER(r,c,e,res,fd) do { if((r = (c)) == NULL) { perror(e); ((res.error)=SCALL_ERROR); CHECK_FCLOSE(fd, res,"errore nella chiusura del file"); return res; } } while(0)
 
+// Free responder arrays and shared type data for pools with a positive idle count.
 #define FREE_ALL_RESCUE(list, len_list) do{\
     if((*list) != NULL){\
         for(size_t i=0;i<len_list;i++){\
-            if(((*list)[i].lst_gemelli) != NULL && (*list)[i].dt_idle > 0){\
-                if(((*list)[i].lst_gemelli[0].rescuer) !=NULL){\
-                    if((((*list)[i]).lst_gemelli[0].rescuer->rescuer_type_name) != NULL){\
-                        free(((*list)[i].lst_gemelli[0].rescuer->rescuer_type_name));\
-                        (*list)[i].lst_gemelli[0].rescuer->rescuer_type_name=NULL;\
+            if(((*list)[i].instances) != NULL && (*list)[i].idle_count > 0){\
+                if(((*list)[i].instances[0].rescuer) !=NULL){\
+                    if((((*list)[i]).instances[0].rescuer->rescuer_type_name) != NULL){\
+                        free(((*list)[i].instances[0].rescuer->rescuer_type_name));\
+                        (*list)[i].instances[0].rescuer->rescuer_type_name=NULL;\
                     } \
-                    free((*list)[i].lst_gemelli[0].rescuer);\
-                    (*list)[i].lst_gemelli[0].rescuer=NULL;\
+                    free((*list)[i].instances[0].rescuer);\
+                    (*list)[i].instances[0].rescuer=NULL;\
                 }\
-                free((*list)[i].lst_gemelli);\
-                (*list)[i].lst_gemelli=NULL;\
+                free((*list)[i].instances);\
+                (*list)[i].instances=NULL;\
             }\
         }\
         free(*list);\
@@ -85,6 +68,7 @@ extern int id_operazione;
     }\
  }while(0)
 
+// Free emergency names and requirement arrays; responder types are borrowed.
  #define FREE_ALL_EMERGENCY(list, n) do{\
     if(*list != NULL){\
         for(size_t i=0;i<n;i++){\
@@ -111,7 +95,7 @@ extern int id_operazione;
         res.error=SCALL_ERROR;\
         return res;\
     }else{\
-        fprintf(stderr, "lettura interrotta per motivo sconosciuto\n");\
+        fprintf(stderr, "Read interrupted for an unknown reason\n");\
         CHECK_FCLOSE(fd, res, "errore nella chiusura del file");\
         res.error=SCALL_ERROR;\
         return res;\
@@ -120,25 +104,23 @@ extern int id_operazione;
 
 #define CHECK_SSCANF(sscanf, n, buffer, res, fd) do{\
     if(sscanf != n){\
-        fprintf(stderr,  "Errore nel parsing della riga: %s", buffer);\
+        fprintf(stderr,  "Failed to parse line: %s", buffer);\
         CHECK_FCLOSE(fd, res,"errore nella chiusura del file");\
         res.error=SCALL_ERROR;\
         return res;\
     }\
 }while(0)
 
-
-//____________MACRO NON PARSER-EXCLUSIVE___________________________________________________
+// Grid calculations and general-purpose fatal error checks.
 
 #define ABS(x) ((x<0) ? (x*(-1)) : x)
-#define DISTANZA(x1,y1,x2,y2) (ABS((x1-x2))+ABS((y1-y2)))
-#define TRAVEL_TIME(vel, x1, y1, x2, y2) ((DISTANZA(x1, y1, x2, y2))/vel)
+// Manhattan distance; travel time uses integer division by speed.
+#define MANHATTAN_DISTANCE(x1,y1,x2,y2) (ABS((x1-x2))+ABS((y1-y2)))
+#define TRAVEL_TIME(speed, x1, y1, x2, y2) ((MANHATTAN_DISTANCE(x1, y1, x2, y2))/speed)
 #define POS_AND_MIN(x, n) (((x) > 0 && (x) <= (n)) ? 1 : 0)
 
 #define THRD_CHECK(t, e)do{if(t==thrd_error){perror(e);exit(EXIT_FAILURE);}}while(0)
 #define EQ_ERROR(n, e) do{if(n==SCALL_ERROR){perror(e);exit(EXIT_FAILURE);} }while(0)
 #define EQN_ERROR(n, e) do{if(n==NULL){perror(e);exit(EXIT_FAILURE);} }while(0)
-
-
 
 #endif
